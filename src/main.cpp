@@ -45,12 +45,7 @@ int s2 = 0;
 int s3 = 0;
 int s4 = 0;
 
-void BlynkCon(){
-  Blynk.virtualWrite(V1, 1);
-  Blynk.virtualWrite(V2, 1);
-  Blynk.virtualWrite(V3, 1);
-  Blynk.virtualWrite(V4, 1);
-}
+
 void ReadFS(){
   File file = LittleFS.open("./config.json", "r");
   if(!file){
@@ -70,17 +65,20 @@ void ReadFS(){
 
   StaticJsonDocument<200> data;
   deserializeJson(data, buf.get());
-  digitalWrite(R1, data["R1"].as<int>());
-  digitalWrite(R2, data["R2"].as<int>());
-  digitalWrite(R3, data["R3"].as<int>());
-  digitalWrite(R4, data["R4"].as<int>());
+  digitalWrite(R1, s1=data["R1"].as<int>());
+  digitalWrite(R2, s2=data["R2"].as<int>());
+  digitalWrite(R3, s3=data["R3"].as<int>());
+  digitalWrite(R4, s4=data["R4"].as<int>());
   
 
 }
 
 
 BLYNK_CONNECTED(){
-  BlynkCon();
+  Blynk.virtualWrite(V1, s1);
+  Blynk.virtualWrite(V2, s2);
+  Blynk.virtualWrite(V3, s3);
+  Blynk.virtualWrite(V4, s4);
   Blynk.syncVirtual(V1, V2, V3, V4);
   Serial.println("Connected to Server");
 }
@@ -283,5 +281,5 @@ void loop()
   if(mode == 0){with_internet();}else{without_internet();}
   WriteFS();
   checkPush();
-  Serial.println(s3);
+  Serial.println(s1);
 }
