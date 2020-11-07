@@ -51,22 +51,27 @@ void writeBlynk(){
 BLYNK_CONNECTED(){
   Serial.println("Connected to the server");
   writeBlynk();
-  Blynk.syncVirtual(V1,V2,V3,V4);
   write_mode=0;
+  Blynk.syncVirtual(V1,V2,V3,V4);
+  
 }
 BLYNK_WRITE(V1){
-  digitalWrite(R1, st1=param.asInt());
+  st1=param.asInt();
+  digitalWrite(R1, st1);
 }
 
 BLYNK_WRITE(V2){
-  digitalWrite(R2, st2=param.asInt());
+  st2=param.asInt();
+  digitalWrite(R2, st2);
 }
 
 BLYNK_WRITE(V3){
-  digitalWrite(R3, st3=param.asInt());
+  st3=param.asInt();
+  digitalWrite(R3, st3);
 }
 BLYNK_WRITE(V4){
-  digitalWrite(R4, st4=param.asInt());
+  st4=param.asInt();
+  digitalWrite(R4, st4);
 }
 
 void readFS(){
@@ -187,6 +192,11 @@ void withInternet(){
 }
 void withoutInternet(){
   Serial.println("Without internet");
+  digitalWrite(R1, digitalRead(S1));
+  digitalWrite(R2, digitalRead(S2));
+  digitalWrite(R3, digitalRead(S3));
+  digitalWrite(R4, digitalRead(S4));
+
 }
 void setup(){
   Serial.begin(115200);
@@ -213,9 +223,8 @@ void setup(){
 
 void loop(){
   Blynk.run();
-  checkInternet();
   if(mode==0){withInternet();}else{withoutInternet();}
-  if(write_mode==0){writeFS();}
+  if(write_mode==0){writeFS();checkInternet();}
   Serial.println(st1);
   
 }
