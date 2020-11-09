@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <ESP8266WiFi.h>
 #define BLYNK_PRINT Serial
 #include <LittleFS.h>
@@ -76,10 +77,10 @@ BLYNK_WRITE(V4){
 
 void readFS(){
   File file = LittleFS.open("./config.json", "r");
-  while (file.available())
-  {
-    Serial.write(file.read());
-  }
+  // while (file.available())
+  // {
+  //   Serial.write(file.read());
+  // }
   
   if(!file){
     file.close();
@@ -92,10 +93,11 @@ void readFS(){
   file.close();
   StaticJsonDocument<200> doc;
   deserializeJson(doc, buf.get());
-  digitalWrite(R1, doc["R1"].as<int>());
-  digitalWrite(R2, doc["R2"].as<int>());
-  digitalWrite(R3, doc["R3"].as<int>());
-  digitalWrite(R4, doc["R4"].as<int>());
+  st1=doc["R1"];
+  st2=doc["R2"];
+  st3=doc["R3"];
+  st4=doc["R4"];
+  
 }
 
 void writeFS(){
@@ -211,6 +213,15 @@ void setup(){
   pinMode(S3, INPUT_PULLUP);
   pinMode(S4, INPUT_PULLUP);
   readFS();
+  digitalWrite(R1, st1);
+  digitalWrite(R2, st2);
+  digitalWrite(R3, st3);
+  digitalWrite(R4, st4);
+  Serial.println(digitalRead(R1));
+  Serial.println(digitalRead(R2));
+  Serial.println(digitalRead(R3));
+  Serial.println(digitalRead(R4));
+  
   WiFi.begin(ssid, pass);
   while (WiFi.status()!=WL_CONNECTED)
   {
@@ -225,6 +236,6 @@ void loop(){
   Blynk.run();
   if(mode==0){withInternet();}else{withoutInternet();}
   if(write_mode==0){writeFS();checkInternet();}
-  Serial.println(st1);
+
   
 }
