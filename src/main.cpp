@@ -193,11 +193,67 @@ void withInternet(){
   }
 }
 void withoutInternet(){
-  Serial.println("Without internet");
-  digitalWrite(R1, digitalRead(S1));
-  digitalWrite(R2, digitalRead(S2));
-  digitalWrite(R3, digitalRead(S3));
-  digitalWrite(R4, digitalRead(S4));
+  
+  //Relay1
+  if(digitalRead(S1)==LOW){
+    if(flag1==0){
+      digitalWrite(R1, LOW);
+      st1=0;
+      flag1=1;
+    }
+  }
+  if(digitalRead(S1)==HIGH){
+    if(flag1==1){
+      digitalWrite(R1, HIGH);
+      st1=1;
+      flag1=0;
+    }
+  }
+  //Relay2
+  if(digitalRead(S2)==LOW){
+    if(flag2==0){
+      digitalWrite(R2, LOW);
+      st2=0;
+      flag2=1;
+    }
+  }
+  if(digitalRead(S2)==HIGH){
+    if(flag2==1){
+      digitalWrite(R2, HIGH);
+      st2=1;
+      flag2=0;
+    }
+  }
+  //Relay3
+  if(digitalRead(S3)==LOW){
+    if(flag3==0){
+      digitalWrite(R3, LOW);
+      st3=0;
+      flag3=1;
+    }
+  }
+  if(digitalRead(S3)==HIGH){
+    if(flag3==1){
+      digitalWrite(R3, HIGH);
+      st3=1;
+      flag3=0;
+    }
+  }
+  //Relay4
+  if(digitalRead(S4)==LOW){
+    if(flag4==0){
+      digitalWrite(R4, LOW);
+      st4=0;
+      flag4=1;
+    }
+  }
+  if(digitalRead(S4)==HIGH){
+    if(flag4==1){
+      digitalWrite(R4, HIGH);
+      st4=1;
+      flag4=0;
+    }
+  }
 
 }
 void setup(){
@@ -217,17 +273,16 @@ void setup(){
   digitalWrite(R2, st2);
   digitalWrite(R3, st3);
   digitalWrite(R4, st4);
-  Serial.println(digitalRead(R1));
-  Serial.println(digitalRead(R2));
-  Serial.println(digitalRead(R3));
-  Serial.println(digitalRead(R4));
+  
   
   WiFi.begin(ssid, pass);
   while (WiFi.status()!=WL_CONNECTED)
   {
     Serial.print("*");
+    withoutInternet();
     delay(100);
   }
+  
   Blynk.config(auth);
   
 }
@@ -236,6 +291,4 @@ void loop(){
   Blynk.run();
   if(mode==0){withInternet();}else{withoutInternet();}
   if(write_mode==0){writeFS();checkInternet();}
-
-  
 }
