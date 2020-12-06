@@ -4,6 +4,7 @@
 #include <LittleFS.h>
 #include <BlynkSimpleEsp8266.h>
 #include <ArduinoJson.h>
+#include "Manager.h"
 
 #define R1 D5
 #define R2 D6
@@ -14,6 +15,8 @@
 #define S2 D2
 #define S3 D3
 #define S4 D4
+
+#define trigger_pin D1
 
 int mode=0;
 int write_mode=1;
@@ -29,8 +32,7 @@ int st2=0;
 int st3=0;
 int st4=0;
 
-char ssid[]="unique nepal";
-char pass[]="UNIQUENEPAL";
+
 char auth[]="nlJHegSIKdIJWqf66_0KqnvuFVIz_8qM";
 
 void writeBlynk(){
@@ -256,6 +258,12 @@ void withoutInternet(){
   }
 
 }
+
+void checkBtn(){
+  if(digitalRead(trigger_pin)==LOW){
+    manager.openPortal("animeshdhakal", "animeshdhakal");
+  }
+}
 void setup(){
   Serial.begin(115200);
   LittleFS.begin();
@@ -268,17 +276,20 @@ void setup(){
   pinMode(S2, INPUT_PULLUP);
   pinMode(S3, INPUT_PULLUP);
   pinMode(S4, INPUT_PULLUP);
+  pinMode(trigger_pin, INPUT_PULLUP);
+
   readFS();
   digitalWrite(R1, st1);
   digitalWrite(R2, st2);
   digitalWrite(R3, st3);
   digitalWrite(R4, st4);
   
-  
-  WiFi.begin(ssid, pass);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin();
   while (WiFi.status()!=WL_CONNECTED)
   {
     Serial.print("*");
+    checkBtn();
     withoutInternet();
     delay(100);
   }
@@ -291,4 +302,5 @@ void loop(){
   Blynk.run();
   if(mode==0){withInternet();}else{withoutInternet();}
   if(write_mode==0){writeFS();checkInternet();}
+  checkBtn();
 }
