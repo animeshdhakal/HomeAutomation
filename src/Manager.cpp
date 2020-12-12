@@ -61,6 +61,7 @@ void Manager::openPortal(const char *_APNAME, const char *_APPASS)
   else
   {
     WiFi.mode(WIFI_AP_STA);
+    WiFi.softAP(_APNAME, _APPASS);
   }
 
   startServer();
@@ -68,10 +69,14 @@ void Manager::openPortal(const char *_APNAME, const char *_APPASS)
 
 void Manager::startServer()
 {
+  delay(500);
+  Debug(F("AP IP : "));
+  Debug(WiFi.softAPIP());
   server.reset(new ESP8266WebServer(80));
   dnsServer.reset(new DNSServer);
+  httpUpdate.reset(new ESP8266HTTPUpdateServer);
+  httpUpdate->setup(server.get(), "/u");
   dnsServer->start(DNS_PORT, "*", WiFi.softAPIP());
-
   server->on("/", std::bind(&Manager::handleRoot, this));
   server->on("/wifi", std::bind(&Manager::handleWiFi, this));
   server->on("/add", std::bind(&Manager::handleSave, this));
@@ -79,26 +84,29 @@ void Manager::startServer()
   server->onNotFound(std::bind(&Manager::handleNotFound, this));
   
   server->begin();
-
   while (i == 0)
   {
     dnsServer->processNextRequest();
-      
     server->handleClient();
-    
   }
-  Debug("We are in the reset sectuion");
+  Debug("Connected");
   server.reset();
   dnsServer.reset();
+  i = 0;
 }
 
 void Manager::handleRoot(){
   if (captivePortal())
-    {
-      return;
-    }
-  
-  server->send_P(200, "text/html", portal);
+  {
+    return;
+  }
+  String page = FPSTR(HEAD);
+  page.replace("{t}", "Manager Portal");
+  page+=FPSTR(STYLE);
+  page+=FPSTR(HEAD_END);
+  page+=FPSTR(PORTAL);
+  page+=FPSTR(END);
+  server->send(200, "text/html", page);
 }
 
 void Manager::handleReset(){
@@ -109,7 +117,11 @@ void Manager::handleReset(){
 void Manager::handleWiFi()
 {
   
-  String page = FPSTR(WEB);
+  String page = FPSTR(HEAD);
+  page.replace("{t}", "Manager");
+  page+=FPSTR(STYLE);
+  page+=FPSTR(HEAD_END);
+  page+=FPSTR(WIFI);
   String item;
   int n = WiFi.scanNetworks();
   int indices[n];
@@ -127,9 +139,11 @@ void Manager::handleWiFi()
     item += " ";
     item += quality;
     item += "%";
-    item += "<div/>";
+    item += "</div>";
   }
   page.replace("{v}", item);
+  page+=FPSTR(SCRIPT);
+  page+=FPSTR(END);
   
   server->send(200, "text/html", page);
 }
@@ -143,6 +157,7 @@ void Manager::handleSave()
   delay(5000);
   pageOpened(ssid.c_str(), pass.c_str());
 }
+
 
 void Manager::handleNotFound()
 {

@@ -50,7 +50,6 @@ void writeBlynk(){
   
 }
 
-
 BLYNK_CONNECTED(){
   Serial.println("Connected to the server");
   writeBlynk();
@@ -61,20 +60,24 @@ BLYNK_CONNECTED(){
 BLYNK_WRITE(V1){
   st1=param.asInt();
   digitalWrite(R1, st1);
+  
 }
 
 BLYNK_WRITE(V2){
   st2=param.asInt();
   digitalWrite(R2, st2);
+  
 }
 
 BLYNK_WRITE(V3){
   st3=param.asInt();
   digitalWrite(R3, st3);
+  
 }
 BLYNK_WRITE(V4){
   st4=param.asInt();
   digitalWrite(R4, st4);
+  
 }
 
 void readFS(){

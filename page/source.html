@@ -1,9 +1,13 @@
-<html>
+<!-- HEAD -->
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+    <!-- /HEAD -->
+    <!-- STYLE -->
     <style>
         body {
-            
             font-family: Arial, Helvetica, sans-serif;
         }
 
@@ -12,8 +16,6 @@
             text-align: center;
             justify-content: center;
             align-items: center;
-
-
         }
 
         button {
@@ -25,61 +27,72 @@
             margin-top: 1.5em;
             color: black;
             font-size: 1em;
-
-        }
-
-        button,
-        input {
-            margin-top: 10px;
         }
 
         input {
-            width: 20em;
+            width: 19.5em;
             height: 2em;
-            
+            margin-top: 10px;
             font-size: 0.85rem;
-            
         }
-        div{
+
+        div {
             margin-top: 0.3rem;
         }
-        
     </style>
+    
+    <!-- /STYLE -->
+    <!-- HEAD_END -->
 </head>
 
 <body>
+    <!-- /HEAD_END -->
+    <!-- WIFI -->
     <div class="container">
-        <div><a href="#" onclick="clicked(this)">unique nepal</a> 100%
-            <div />
-            <div><a href="#" onclick="clicked(this)">bikash@wifi</a> 76%
-                <div />
-                <div><a href="#" onclick="clicked(this)">Nishangrg@wifi</a> 26%
-                    <div />
+        {v}
+        <div>
+            <a href="#">Animesh Dhakal</a>
+        </div>
+        <input type="text" name="ssid" placeholder="SSID" id="ssid">
+        <br>
+        <input type="text" name="pass" placeholder="Pass" id="pass">
+        <br>
+        <button onclick="btn_click()">Submit</button>
 
-                    <input type="text" name="ssid" placeholder="SSID" id="ssid">
-                    <br>
-                    <input type="text" name="pass" placeholder="Pass" id="pass">
-                    <br>
-                    <button onclick="btn_click()">Submit</button>
+    </div>
+    <!-- /WIFI -->
+    <!-- PORTAL -->
+    <div class="container">
+        <button onclick="window.location='/wifi'">WiFi Setup</button>
+        <br>
+        <button onclick="window.location='/r'">Reset</button>
+        <br>
+        <button onclick="window.location='/u'">Updates</button>
+        <br>
+        <button>Exit</button>
+    </div>
+    <!-- /PORTAL -->
+    <!-- SCRIPT -->
+    <script>
+        function clicked(t) {
+            document.getElementById("ssid").value = t.innerText;
+        }
+        function btn_click() {
+            var xhr = new XMLHttpRequest();
+            var url = "/add?ssid=" + document.getElementById("ssid").value + "&pass=" + document.getElementById("pass").value;
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
 
-                </div>
-                <script>
-                    function clicked(t) {
-                        document.getElementById("ssid").value = t.innerText;
-                    }
-                    function btn_click() {
-                        var xhr = new XMLHttpRequest();
-                        var url = "/add?ssid=" + document.getElementById("ssid").value + "&pass=" + document.getElementById("pass").value;
-                        xhr.onreadystatechange = function () {
-                            if (this.readyState == 4 && this.status == 200) {
-
-                                document.body.innerHTML = this.responseText;
-                            }
-                        }
-                        xhr.open("GET", url);
-                        xhr.send();
-                    }
-                </script>
+                    document.body.innerHTML = this.responseText;
+                }
+            };
+            xhr.open("GET", url);
+            xhr.send();
+        }
+    </script>
+    <!-- /SCRIPT -->
+    <!-- END -->
 </body>
 
 </html>
+<!-- /END -->
