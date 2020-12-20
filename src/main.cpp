@@ -50,6 +50,17 @@ void writeBlynk(){
   
 }
 
+void writeFS(){
+  File file = LittleFS.open("./config.json", "w");
+  StaticJsonDocument<200> doc;
+  doc["R1"]=st1;
+  doc["R2"]=st2;
+  doc["R3"]=st3;
+  doc["R4"]=st4;
+  serializeJson(doc, file);
+  file.close();
+}
+
 BLYNK_CONNECTED(){
   Serial.println("Connected to the server");
   writeBlynk();
@@ -60,24 +71,24 @@ BLYNK_CONNECTED(){
 BLYNK_WRITE(V1){
   st1=param.asInt();
   digitalWrite(R1, st1);
-  
+  writeFS();
 }
 
 BLYNK_WRITE(V2){
   st2=param.asInt();
   digitalWrite(R2, st2);
-  
+  writeFS();
 }
 
 BLYNK_WRITE(V3){
   st3=param.asInt();
   digitalWrite(R3, st3);
-  
+  writeFS();
 }
 BLYNK_WRITE(V4){
   st4=param.asInt();
   digitalWrite(R4, st4);
-  
+  writeFS();
 }
 
 void readFS(){
@@ -91,6 +102,7 @@ void readFS(){
     file.close();
     File file = LittleFS.open("./config.json", "w");
     file.write("{\"R1\":0,\"R2\":0,\"R3\":0,\"R4\":0}");
+    
   }
   size_t size = file.size();
   std::unique_ptr<char[]> buf(new char[size]);
@@ -105,16 +117,7 @@ void readFS(){
   
 }
 
-void writeFS(){
-  File file = LittleFS.open("./config.json", "w");
-  StaticJsonDocument<200> doc;
-  doc["R1"]=st1;
-  doc["R2"]=st2;
-  doc["R3"]=st3;
-  doc["R4"]=st4;
-  serializeJson(doc, file);
-  file.close();
-}
+
 void checkInternet(){
   if(millis()>=time_now+3000){
     time_now+=3000;
@@ -131,6 +134,7 @@ void withInternet(){
       digitalWrite(R1, LOW);
       Blynk.virtualWrite(V1, 0);
       flag1 = 1;
+      writeFS();
     }
   }
   if (digitalRead(S1) == HIGH)
@@ -140,6 +144,7 @@ void withInternet(){
       digitalWrite(R1, HIGH);
       Blynk.virtualWrite(V2, 1);
       flag1 = 0;
+      writeFS();
     }
   }
   if (digitalRead(S2) == LOW)
@@ -149,6 +154,7 @@ void withInternet(){
       digitalWrite(R2, LOW);
       Blynk.virtualWrite(V2, 0);
       flag2 = 1;
+      writeFS();
     }
   }
   if (digitalRead(S2) == HIGH)
@@ -158,6 +164,7 @@ void withInternet(){
       digitalWrite(R2, HIGH);
       Blynk.virtualWrite(V2, 1);
       flag2 = 0;
+      writeFS();
     }
   }
   if (digitalRead(S3) == LOW)
@@ -167,6 +174,7 @@ void withInternet(){
       digitalWrite(R3, LOW);
       Blynk.virtualWrite(V3, 0);
       flag3 = 1;
+      writeFS();
     }
   }
   if (digitalRead(S3) == HIGH)
@@ -176,6 +184,7 @@ void withInternet(){
       digitalWrite(R3, HIGH);
       Blynk.virtualWrite(V3, 1);
       flag3 = 0;
+      writeFS();
     }
   }
   if (digitalRead(S4) == LOW)
@@ -185,6 +194,7 @@ void withInternet(){
       digitalWrite(R4, LOW);
       Blynk.virtualWrite(V4, 0);
       flag4 = 1;
+      writeFS();
     }
   }
   if (digitalRead(S4) == HIGH)
@@ -194,6 +204,7 @@ void withInternet(){
       digitalWrite(R4, HIGH);
       Blynk.virtualWrite(V4, 1);
       flag4 = 0;
+      writeFS();
     }
   }
 }
@@ -205,6 +216,7 @@ void withoutInternet(){
       digitalWrite(R1, LOW);
       st1=0;
       flag1=1;
+      writeFS();
     }
   }
   if(digitalRead(S1)==HIGH){
@@ -212,6 +224,7 @@ void withoutInternet(){
       digitalWrite(R1, HIGH);
       st1=1;
       flag1=0;
+      writeFS();
     }
   }
   //Relay2
@@ -220,6 +233,7 @@ void withoutInternet(){
       digitalWrite(R2, LOW);
       st2=0;
       flag2=1;
+      writeFS();
     }
   }
   if(digitalRead(S2)==HIGH){
@@ -227,6 +241,7 @@ void withoutInternet(){
       digitalWrite(R2, HIGH);
       st2=1;
       flag2=0;
+      writeFS();
     }
   }
   //Relay3
@@ -235,6 +250,7 @@ void withoutInternet(){
       digitalWrite(R3, LOW);
       st3=0;
       flag3=1;
+      writeFS();
     }
   }
   if(digitalRead(S3)==HIGH){
@@ -242,6 +258,7 @@ void withoutInternet(){
       digitalWrite(R3, HIGH);
       st3=1;
       flag3=0;
+      writeFS();
     }
   }
   //Relay4
@@ -250,6 +267,7 @@ void withoutInternet(){
       digitalWrite(R4, LOW);
       st4=0;
       flag4=1;
+      writeFS();
     }
   }
   if(digitalRead(S4)==HIGH){
@@ -257,6 +275,7 @@ void withoutInternet(){
       digitalWrite(R4, HIGH);
       st4=1;
       flag4=0;
+      writeFS();
     }
   }
 
@@ -264,7 +283,7 @@ void withoutInternet(){
 
 void checkBtn(){
   if(digitalRead(trigger_pin)==LOW){
-    manager.openPortal("animeshdhakal", "animeshdhakal");
+    manager.openPortal("adnimesgdgdhj", "animeshdhakal");
   }
 }
 void setup(){
@@ -304,6 +323,6 @@ void setup(){
 void loop(){
   Blynk.run();
   if(mode==0){withInternet();}else{withoutInternet();}
-  if(write_mode==0){writeFS();checkInternet();}
+  if(write_mode==0){checkInternet();}
   checkBtn();
 }

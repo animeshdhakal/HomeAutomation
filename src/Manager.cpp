@@ -22,7 +22,6 @@ int Manager::getRSSIasQuality(int RSSI)
 void Manager::pageOpened(const char *ssid, const char *pass)
 {
 
-  
   WiFi.disconnect();
   WiFi.mode(WIFI_STA);
   delay(100);
@@ -37,9 +36,9 @@ void Manager::pageOpened(const char *ssid, const char *pass)
   if (WiFi.status() == WL_CONNECTED)
   {
     Debug("Connected");
-   
+
     delay(100);
-    i = 1;
+    w = 1;
   }
   else
   {
@@ -82,9 +81,9 @@ void Manager::startServer()
   server->on("/add", std::bind(&Manager::handleSave, this));
   server->on("/r", std::bind(&Manager::handleReset, this));
   server->onNotFound(std::bind(&Manager::handleNotFound, this));
-  
+
   server->begin();
-  while (i == 0)
+  while (w == 0)
   {
     dnsServer->processNextRequest();
     server->handleClient();
@@ -92,36 +91,38 @@ void Manager::startServer()
   Debug("Connected");
   server.reset();
   dnsServer.reset();
-  i = 0;
+  w = 0;
 }
 
-void Manager::handleRoot(){
+void Manager::handleRoot()
+{
   if (captivePortal())
   {
     return;
   }
   String page = FPSTR(HEAD);
   page.replace("{t}", "Manager Portal");
-  page+=FPSTR(STYLE);
-  page+=FPSTR(HEAD_END);
-  page+=FPSTR(PORTAL);
-  page+=FPSTR(END);
+  page += FPSTR(STYLE);
+  page += FPSTR(HEAD_END);
+  page += FPSTR(PORTAL);
+  page += FPSTR(END);
   server->send(200, "text/html", page);
 }
 
-void Manager::handleReset(){
+void Manager::handleReset()
+{
   ESP.reset();
   delay(2000);
 }
 
 void Manager::handleWiFi()
 {
-  
+
   String page = FPSTR(HEAD);
   page.replace("{t}", "Manager");
-  page+=FPSTR(STYLE);
-  page+=FPSTR(HEAD_END);
-  page+=FPSTR(WIFI);
+  page += FPSTR(STYLE);
+  page += FPSTR(HEAD_END);
+  page += FPSTR(WIFI);
   String item;
   int n = WiFi.scanNetworks();
   int indices[n];
@@ -129,12 +130,24 @@ void Manager::handleWiFi()
   {
     indices[i] = i;
   }
+
+  for (int i = 0; i < n; i++)
+  {
+    for (int j = i + 1; j < n; j++)
+    {
+      if (WiFi.RSSI(indices[j]) > WiFi.RSSI(indices[i]))
+      {
+        std::swap(indices[i], indices[j]);
+      }
+    }
+  }
+
   for (int i = 0; i < n; i++)
   {
     int quality = getRSSIasQuality(WiFi.RSSI(indices[i]));
-    item+="<div>";
+    item += "<div>";
     item += "<a href=\"#\" onclick=\"clicked(this)\">";
-    item += WiFi.SSID(i);
+    item += WiFi.SSID(indices[i]);
     item += "</a>";
     item += " ";
     item += quality;
@@ -142,9 +155,9 @@ void Manager::handleWiFi()
     item += "</div>";
   }
   page.replace("{v}", item);
-  page+=FPSTR(SCRIPT);
-  page+=FPSTR(END);
-  
+  page += FPSTR(SCRIPT);
+  page += FPSTR(END);
+
   server->send(200, "text/html", page);
 }
 
@@ -158,16 +171,16 @@ void Manager::handleSave()
   pageOpened(ssid.c_str(), pass.c_str());
 }
 
-
 void Manager::handleNotFound()
 {
   if (captivePortal())
   {
     return;
   }
-  
+
   server->send(404, "text/plain", "Not Found");
 }
+
 
 boolean Manager::captivePortal()
 {

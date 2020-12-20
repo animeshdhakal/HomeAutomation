@@ -4,8 +4,8 @@ const fs = require('fs');
 
 console.log('starting');
 
-const inFile = 'C:\\Users\\Unique Nepal\\Desktop\\Home Automation\\Home Automation\\page\\source.html';
-const outFile = 'C:\\Users\\Unique Nepal\\Desktop\\Home Automation\\Home Automation\\page\\temp.txt';
+const inFile = 'source.html';
+const outFile = 'temp.txt';
 
 const defineRegEx = /<!-- ([A-Z_]+) -->/gm;
 console.log('parsing', inFile);
@@ -48,7 +48,7 @@ fs.readFile(inFile, 'utf8', function (err,data) {
         console.log(def);
         //const char HTTP_HEAD[] PROGMEM            =
         let string = 'const char ' + constantName + '[] PROGMEM';
-        for (let i = string.length; i < 30; i++) {
+        for (let i = string.length; i < 42; i++) {
           string += ' ';
         }
         string += '= "' + def + '";\n';
