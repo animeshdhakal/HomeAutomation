@@ -14,7 +14,7 @@ extern "C"{
 }
 
 const char HEAD[] PROGMEM                 = "<!DOCTYPE html><html lang=\"en\"><head><meta name=\"viewport\"content=\"width=device-width,initial-scale=1,user-scalable=no\" />";
-const char STYLE[] PROGMEM                = "<style>body{ font-family:Arial,Helvetica,sans-serif; } .container{ text-align:center;justify-content:center;align-items:center;margin-top:20vh; }button{ width:17em;height:2.3em;background-color:rgb(9,137,223);border:none;border-radius:0.2rem;margin-top:1.5em;color:white;font-size:1em; }input{ width:19.3em;height:2em;margin-top:10px;font-size:0.85rem; }div{ margin-top:0.3rem; } </style>";
+const char STYLE[] PROGMEM                = "<style>body{ font-family:Arial,Helvetica,sans-serif; } .container{ text-align:center;justify-content:center;align-items:center;margin-top:20vh; }button{ width:17em;height:2.3em;background-color:rgb(9,137,223);border:none;border-radius:0.2rem;margin-top:1.5em;color:black;font-weight:500;font-size:1em; }input{ width:19.3em;height:2em;margin-top:10px;font-size:0.85rem; }div{ margin-top:0.3rem; } </style>";
 const char HEAD_END[] PROGMEM             = "</head><body>";
 const char WIFI[] PROGMEM                 = "<div class=\"container\"> {v} <input type=\"text\"name=\"ssid\"placeholder=\"SSID\"id=\"SSID\"><br><input type=\"text\"name=\"pass\"placeholder=\"Pass\"id=\"Password\"><br><button onclick=\"btn_click()\">Submit</button></div>";
 const char PORTAL[] PROGMEM               = "<div class=\"container\"><button onclick=\"window.location='/wifi'\">WiFi Setup</button><br><button onclick=\"window.location='/r'\">Reset</button><br><button onclick=\"window.location='/u'\">Updates</button><br><button>Exit</button></div>";
