@@ -1,10 +1,10 @@
-from flask import Flask, request
+file = open("source.html", "r")
 
-app = Flask(__name__)
+page = file.read()
 
-@app.route("/", methods=["GET", "POST"])
-def func():
-    print(request.headers["X-Esp8266-Version"])
-    return str(request.headers)
+print(page.find("<!--"))
 
-app.run(host="0.0.0.0", port="5000", debug=True)
+print(page[page.find("<!--")])
+
+for i in page.rfind("<!--"):
+    print(i)

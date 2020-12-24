@@ -27,7 +27,6 @@ fs.readFile(inFile, 'utf8', function (err,data) {
       const end = start.replace('<!-- ', '<!-- /')
       defineRegEx.lastIndex = 0;
       const constantName = defineRegEx.exec(start)[1];
-
       console.log(constantName);
       var extractRE = new RegExp(start + '([\\s\\S]+)' + end, 'gm');
       let extractArray = extractRE.exec(data);

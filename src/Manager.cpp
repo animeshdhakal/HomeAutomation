@@ -117,7 +117,6 @@ void Manager::handleReset()
 
 void Manager::handleWiFi()
 {
-
   String page = FPSTR(HEAD);
   page.replace("{t}", "Manager");
   page += FPSTR(STYLE);
