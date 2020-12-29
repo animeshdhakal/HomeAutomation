@@ -19,7 +19,6 @@
 #define trigger_pin D1
 
 int mode=0;
-int write_mode=1;
 unsigned int time_now=0;
 
 int flag1=0;
@@ -48,6 +47,7 @@ void writeBlynk(){
   Blynk.virtualWrite(V3, doc["R3"].as<int>());
   Blynk.virtualWrite(V4, doc["R4"].as<int>());
   
+  
 }
 
 void writeFS(){
@@ -64,9 +64,6 @@ void writeFS(){
 BLYNK_CONNECTED(){
   Serial.println("Connected to the server");
   writeBlynk();
-  write_mode=0;
-  Blynk.syncVirtual(V1,V2,V3,V4);
-  
 }
 BLYNK_WRITE(V1){
   st1=param.asInt();
@@ -93,11 +90,6 @@ BLYNK_WRITE(V4){
 
 void readFS(){
   File file = LittleFS.open("./config.json", "r");
-  // while (file.available())
-  // {
-  //   Serial.write(file.read());
-  // }
-  
   if(!file){
     file.close();
     File file = LittleFS.open("./config.json", "w");
@@ -283,7 +275,7 @@ void withoutInternet(){
 
 void checkBtn(){
   if(digitalRead(trigger_pin)==LOW){
-    manager.openPortal("adnimesgdgdhj", "animeshdhakal");
+    manager.openPortal("animeshdhakall", "animeshdhakal");
   }
 }
 void setup(){
@@ -313,7 +305,7 @@ void setup(){
     Serial.print("*");
     checkBtn();
     withoutInternet();
-    delay(100);
+    yield();
   }
   
   Blynk.config(auth);
@@ -323,6 +315,6 @@ void setup(){
 void loop(){
   Blynk.run();
   if(mode==0){withInternet();}else{withoutInternet();}
-  if(write_mode==0){checkInternet();}
+  checkInternet();
   checkBtn();
 }

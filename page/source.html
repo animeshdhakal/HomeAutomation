@@ -51,9 +51,9 @@
     <!-- WIFI -->
     <div class="container">
         {v}
-        <input type="text" name="ssid" placeholder="SSID" id="SSID">
+        <input type="text" name="ssid" placeholder="SSID" id="ssid">
         <br>
-        <input type="text" name="pass" placeholder="Pass" id="Password">
+        <input type="text" name="pass" placeholder="Password" id="pass">
         <br>
         <button onclick="btn_click()">Submit</button>
     </div>
@@ -72,6 +72,8 @@
     <!-- SCRIPT -->
     <script>
         function clicked(t) {
+
+            console.log("clicked");
             document.getElementById("ssid").value = t.innerText;
         }
         function btn_click() {

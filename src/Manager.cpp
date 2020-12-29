@@ -31,7 +31,7 @@ void Manager::pageOpened(const char *ssid, const char *pass)
     Serial.print("*");
     if (WiFi.status() == WL_CONNECTED)
       break;
-    delay(100);
+    yield();
   }
   if (WiFi.status() == WL_CONNECTED)
   {
@@ -87,6 +87,7 @@ void Manager::startServer()
   {
     dnsServer->processNextRequest();
     server->handleClient();
+    yield();
   }
   Debug("Connected");
   server.reset();
@@ -165,7 +166,7 @@ void Manager::handleSave()
 
   String ssid = server->arg("ssid");
   String pass = server->arg("pass");
-  server->send(200, "text/plain", "<style>p{color: red;}</style><center><h2>ESP GOT SSID</h2></center>");
+  server->send(200, "text/plain", "<style>p{color: red;}</style><center><h2 style='margin-top: 20vh'>Credentials Received By ESP</h2></center>");
   delay(5000);
   pageOpened(ssid.c_str(), pass.c_str());
 }
