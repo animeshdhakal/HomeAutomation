@@ -19,7 +19,7 @@ int Manager::getRSSIasQuality(int RSSI)
   return quality;
 }
 
-void Manager::pageOpened(const char *ssid, const char *pass)
+void Manager::pageOpened(const char* ssid, const char* pass)
 {
 
   WiFi.disconnect();
@@ -31,7 +31,7 @@ void Manager::pageOpened(const char *ssid, const char *pass)
     Serial.print("*");
     if (WiFi.status() == WL_CONNECTED)
       break;
-    yield();
+    delay(100);
   }
   if (WiFi.status() == WL_CONNECTED)
   {
@@ -47,7 +47,7 @@ void Manager::pageOpened(const char *ssid, const char *pass)
   }
 }
 
-void Manager::openPortal(const char *_APNAME, const char *_APPASS)
+void Manager::openPortal(const char* _APNAME, const char* _APPASS)
 {
 
   Debug("Starting Config Portal");
@@ -169,6 +169,7 @@ void Manager::handleSave()
   server->send(200, "text/plain", "<style>p{color: red;}</style><center><h2 style='margin-top: 20vh'>Credentials Received By ESP</h2></center>");
   delay(5000);
   pageOpened(ssid.c_str(), pass.c_str());
+  
 }
 
 void Manager::handleNotFound()

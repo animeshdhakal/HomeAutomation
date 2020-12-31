@@ -6,6 +6,7 @@
 #include <ArduinoJson.h>
 #include "Manager.h"
 
+#define Log(x) Serial.println(x)
 #define R1 D5
 #define R2 D6
 #define R3 D7
@@ -18,8 +19,7 @@
 
 #define trigger_pin D1
 
-int mode=0;
-unsigned int time_now=0;
+int mode=2;
 
 int flag1=0;
 int flag2=0;
@@ -64,7 +64,15 @@ void writeFS(){
 BLYNK_CONNECTED(){
   Serial.println("Connected to the server");
   writeBlynk();
+  mode = 0;
+  
 }
+
+BLYNK_DISCONNECTED(){
+  Log("Disconnected");
+  mode = 1;
+}
+
 BLYNK_WRITE(V1){
   st1=param.asInt();
   digitalWrite(R1, st1);
@@ -107,14 +115,6 @@ void readFS(){
   st3=doc["R3"];
   st4=doc["R4"];
   
-}
-
-
-void checkInternet(){
-  if(millis()>=time_now+3000){
-    time_now+=3000;
-    if(Blynk.connected()){mode=0;}else{mode=1;};
-  }
 }
 
 void withInternet(){
@@ -305,7 +305,7 @@ void setup(){
     Serial.print("*");
     checkBtn();
     withoutInternet();
-    yield();
+    delay(100);
   }
   
   Blynk.config(auth);
@@ -315,6 +315,5 @@ void setup(){
 void loop(){
   Blynk.run();
   if(mode==0){withInternet();}else{withoutInternet();}
-  checkInternet();
   checkBtn();
 }
