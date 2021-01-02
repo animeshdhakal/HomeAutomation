@@ -19,7 +19,7 @@
 
 #define trigger_pin D1
 
-int mode=2;
+int mode=0;
 
 int flag1=0;
 int flag2=0;
@@ -46,8 +46,6 @@ void writeBlynk(){
   Blynk.virtualWrite(V2, doc["R2"].as<int>());
   Blynk.virtualWrite(V3, doc["R3"].as<int>());
   Blynk.virtualWrite(V4, doc["R4"].as<int>());
-  
-  
 }
 
 void writeFS(){
@@ -64,13 +62,12 @@ void writeFS(){
 BLYNK_CONNECTED(){
   Serial.println("Connected to the server");
   writeBlynk();
-  mode = 0;
-  
+  mode = 1; 
 }
 
 BLYNK_DISCONNECTED(){
   Log("Disconnected");
-  mode = 1;
+  mode = 0;
 }
 
 BLYNK_WRITE(V1){
@@ -314,6 +311,6 @@ void setup(){
 
 void loop(){
   Blynk.run();
-  if(mode==0){withInternet();}else{withoutInternet();}
+  if(mode==1){withInternet();}else{withoutInternet();}
   checkBtn();
 }
