@@ -43,13 +43,13 @@ void Manager::pageOpened(const char* ssid, const char* pass)
   else
   {
     Debug("Connection time out starting the AP");
-    openPortal(WiFi.softAPSSID().c_str(), WiFi.softAPPSK().c_str());
+    openPortal(WiFi.softAPSSID().c_str(), WiFi.softAPPSK().c_str(), loops);
   }
 }
 
-void Manager::openPortal(const char* _APNAME, const char* _APPASS)
+void Manager::openPortal(const char* _APNAME, const char* _APPASS, void (*f)())
 {
-
+  loops = f;
   Debug("Starting Config Portal");
   if (WiFi.status() != WL_CONNECTED)
   {

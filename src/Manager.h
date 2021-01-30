@@ -25,7 +25,7 @@ const char END[] PROGMEM                  = "</body></html>";
 
 class Manager{
     public:
-        void openPortal(const char* _APNAME, const char* _APPASS);
+        void openPortal(const char* _APNAME, const char* _APPASS, void (*f)());
     private:
         const byte DNS_PORT = 53;
         bool _debug = true;
@@ -41,6 +41,7 @@ class Manager{
         void handleWiFi();
         void handleSave();
         void handleNotFound();
+        void (*loops)();
         boolean captivePortal();
         String toStringIp(IPAddress ip);
         boolean isIp(String str);

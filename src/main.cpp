@@ -33,7 +33,7 @@ int st4=0;
 
 
 char auth[]="nlJHegSIKdIJWqf66_0KqnvuFVIz_8qM";
-
+void loop();
 void writeBlynk(){
   File file = LittleFS.open("./config.json", "r");
   size_t size = file.size();
@@ -272,7 +272,7 @@ void withoutInternet(){
 
 void checkBtn(){
   if(digitalRead(trigger_pin)==LOW){
-    manager.openPortal("animeshdhakall", "animeshdhakal");
+    manager.openPortal("animeshdhakall", "animeshdhakal", loop);
   }
 }
 void setup(){
