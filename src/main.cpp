@@ -6,7 +6,6 @@
 #include <ArduinoJson.h>
 #include "Manager.h"
 
-#define Log(x) Serial.println(x)
 #define R1 D5
 #define R2 D6
 #define R3 D7
@@ -31,9 +30,8 @@ int st2=0;
 int st3=0;
 int st4=0;
 
-
 char auth[]="nlJHegSIKdIJWqf66_0KqnvuFVIz_8qM";
-void loop();
+
 void writeBlynk(){
   File file = LittleFS.open("./config.json", "r");
   size_t size = file.size();
@@ -66,7 +64,7 @@ BLYNK_CONNECTED(){
 }
 
 BLYNK_DISCONNECTED(){
-  Log("Disconnected");
+  Serial.println("Disconnected");
   mode = 0;
 }
 
@@ -272,7 +270,7 @@ void withoutInternet(){
 
 void checkBtn(){
   if(digitalRead(trigger_pin)==LOW){
-    manager.openPortal("animeshdhakall", "animeshdhakal", loop);
+    manager.openPortal("animeshdhakall", "animeshdhakal");
   }
 }
 void setup(){
@@ -296,7 +294,6 @@ void setup(){
   digitalWrite(R4, st4);
   
   WiFi.mode(WIFI_STA);
-  WiFi.begin();
   while (WiFi.status()!=WL_CONNECTED)
   {
     Serial.print("*");
