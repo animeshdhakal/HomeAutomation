@@ -44,6 +44,7 @@ void writeBlynk(){
   Blynk.virtualWrite(V2, doc["R2"].as<int>());
   Blynk.virtualWrite(V3, doc["R3"].as<int>());
   Blynk.virtualWrite(V4, doc["R4"].as<int>());
+  int i;
 }
 
 void writeFS(){
