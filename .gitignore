@@ -1,4 +1,2 @@
-.pio
-.vscode
-backup.txt
-lib
+build/esp8266
+build/makeEspArduino

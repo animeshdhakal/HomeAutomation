@@ -44,7 +44,6 @@ void writeBlynk(){
   Blynk.virtualWrite(V2, doc["R2"].as<int>());
   Blynk.virtualWrite(V3, doc["R3"].as<int>());
   Blynk.virtualWrite(V4, doc["R4"].as<int>());
-  int i;
 }
 
 void writeFS(){
@@ -93,6 +92,7 @@ BLYNK_WRITE(V4){
 }
 
 void readFS(){
+  
   File file = LittleFS.open("./config.json", "r");
   if(!file){
     file.close();
@@ -110,7 +110,7 @@ void readFS(){
   st2=doc["R2"];
   st3=doc["R3"];
   st4=doc["R4"];
-  
+
 }
 
 void withInternet(){
@@ -289,6 +289,7 @@ void setup(){
   pinMode(trigger_pin, INPUT_PULLUP);
 
   readFS();
+ 
   digitalWrite(R1, st1);
   digitalWrite(R2, st2);
   digitalWrite(R3, st3);

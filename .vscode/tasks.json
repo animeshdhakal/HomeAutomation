@@ -1,0 +1,17 @@
+{
+   "version" : "2.0.0",
+   "tasks" : [
+      {
+         "type" : "shell",
+         "problemMatcher" : [
+            "$gcc"
+         ],
+         "group" : "build",
+         "command" : "make -f ${workspaceFolder}/build/makeEspArduino/makeEspArduino.mk ESP_ROOT=./build/esp8266/",
+         "options" : {
+            "cwd" : "${workspaceFolder}"
+         },
+         "label" : "main"
+      }
+   ]
+}
