@@ -1,1 +1,3 @@
 .vscode
+build/esp8266
+build/makeEspArduino

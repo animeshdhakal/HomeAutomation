@@ -17,9 +17,14 @@ def update():
             python{sys.version_info[0]} get.py \n
         """
         os.system(ci)
-    else:  
-        os.system("cd ./build/esp8266/ \n")
-        os.system(f"git checkout tags/{ver} -f \n cd tools \n python{sys.version_info[0]} get.py \n")     
+    else: 
+        ci = f"""
+            cd ./build/esp8266/ \n
+            git checkout tags/{ver} -f \n
+            cd tools \n 
+            python{sys.version_info[0]} get.py \n
+        """
+        os.system(ci)     
         
 
 def install():
