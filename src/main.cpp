@@ -306,8 +306,3 @@ void setup(){
   
 }
 
-void loop(){
-  Blynk.run();
-  if(mode==1){withInternet();}else{withoutInternet();}
-  checkBtn();
-}
