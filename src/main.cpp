@@ -3,7 +3,6 @@
 #define BLYNK_PRINT Serial
 #include <LittleFS.h>
 #include <BlynkSimpleEsp8266.h>
-#include <ArduinoJson.h>
 #include "Manager.h"
 
 #define R1 D5
@@ -34,23 +33,25 @@ char auth[]="nlJHegSIKdIJWqf66_0KqnvuFVIz_8qM";
 
 void writeBlynk(){
   File file = LittleFS.open("./config.json", "r");
-  StaticJsonDocument<200> doc;
-  deserializeJson(doc, file);
+  std::unique_ptr<char[]> buf(new char[file.size()]);
+  file.readBytes(buf.get(), file.size());
   file.close();
-  Blynk.virtualWrite(V1, doc["R1"].as<int>());
-  Blynk.virtualWrite(V2, doc["R2"].as<int>());
-  Blynk.virtualWrite(V3, doc["R3"].as<int>());
-  Blynk.virtualWrite(V4, doc["R4"].as<int>());
+  Blynk.virtualWrite(V1, buf.get()[0] - '0');
+  Blynk.virtualWrite(V2, buf.get()[1] - '0');
+  Blynk.virtualWrite(V3, buf.get()[2] - '0');
+  Blynk.virtualWrite(V4, buf.get()[3] - '0');
 }
 
 void writeFS(){
   File file = LittleFS.open("./config.json", "w");
-  StaticJsonDocument<200> doc;
-  doc["R1"]=st1;
-  doc["R2"]=st2;
-  doc["R3"]=st3;
-  doc["R4"]=st4;
-  serializeJson(doc, file);
+  String data;
+  data += st1;
+  data += st2;
+  data += st3;
+  data += st4;
+  file.write(data.c_str());
+  Serial.println("writing data");
+  Serial.println(data);
   file.close();
 }
 
@@ -102,12 +103,11 @@ void readFS(){
   std::unique_ptr<char[]> buf(new char[size]);
   file.readBytes(buf.get(), size);
   file.close();
-  StaticJsonDocument<200> doc;
-  deserializeJson(doc, buf.get());
-  st1=doc["R1"];
-  st2=doc["R2"];
-  st3=doc["R3"];
-  st4=doc["R4"];
+  st1 = buf.get()[0] - '0';
+  st2 = buf.get()[1] - '0';
+  st3 = buf.get()[2] - '0';
+  st4 = buf.get()[3] - '0';
+  Serial.println("Read data" + st1 + st2 + st3 +st4);
 
 }
 
@@ -306,3 +306,8 @@ void setup(){
   
 }
 
+void loop(){
+  Blynk.run();
+  if(mode==1){withInternet();}else{withoutInternet();}
+  checkBtn();
+}
