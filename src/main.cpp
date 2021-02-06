@@ -34,12 +34,9 @@ char auth[]="nlJHegSIKdIJWqf66_0KqnvuFVIz_8qM";
 
 void writeBlynk(){
   File file = LittleFS.open("./config.json", "r");
-  size_t size = file.size();
-  std::unique_ptr<char[]> buf(new char[size]);
-  file.readBytes(buf.get(), size);
-  file.close();
   StaticJsonDocument<200> doc;
-  deserializeJson(doc, buf.get());
+  deserializeJson(doc, file);
+  file.close();
   Blynk.virtualWrite(V1, doc["R1"].as<int>());
   Blynk.virtualWrite(V2, doc["R2"].as<int>());
   Blynk.virtualWrite(V3, doc["R3"].as<int>());
@@ -85,6 +82,7 @@ BLYNK_WRITE(V3){
   digitalWrite(R3, st3);
   writeFS();
 }
+
 BLYNK_WRITE(V4){
   st4=param.asInt();
   digitalWrite(R4, st4);
@@ -296,7 +294,7 @@ void setup(){
   digitalWrite(R4, st4);
   
   WiFi.mode(WIFI_STA);
-  while (WiFi.status()!=WL_CONNECTED)
+  while(WiFi.status() != WL_CONNECTED)
   {
     Serial.print("*");
     checkBtn();
