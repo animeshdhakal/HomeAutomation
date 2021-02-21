@@ -31,15 +31,19 @@ int st4=0;
 
 char auth[]="nlJHegSIKdIJWqf66_0KqnvuFVIz_8qM";
 
+int toInt(char a){
+  return a - '0';
+}
+
 void writeBlynk(){
   File file = LittleFS.open("./config.json", "r");
-  std::unique_ptr<char[]> buf(new char[file.size()]);
-  file.readBytes(buf.get(), file.size());
+  char data[file.size()];
+  file.readBytes(data, file.size());
   file.close();
-  Blynk.virtualWrite(V1, buf.get()[0] - '0');
-  Blynk.virtualWrite(V2, buf.get()[1] - '0');
-  Blynk.virtualWrite(V3, buf.get()[2] - '0');
-  Blynk.virtualWrite(V4, buf.get()[3] - '0');
+  Blynk.virtualWrite(V1, toInt(data[0]));
+  Blynk.virtualWrite(V2, toInt(data[1]));
+  Blynk.virtualWrite(V3, toInt(data[2]));
+  Blynk.virtualWrite(V4, toInt(data[3]));
 }
 
 void writeFS(){
@@ -50,8 +54,6 @@ void writeFS(){
   data += st3;
   data += st4;
   file.write(data.c_str());
-  Serial.println("writing data");
-  Serial.println(data);
   file.close();
 }
 
@@ -96,19 +98,17 @@ void readFS(){
   if(!file){
     file.close();
     File file = LittleFS.open("./config.json", "w");
-    file.write("{\"R1\":0,\"R2\":0,\"R3\":0,\"R4\":0}");
+    file.write("1111");
     
   }
-  size_t size = file.size();
-  std::unique_ptr<char[]> buf(new char[size]);
-  file.readBytes(buf.get(), size);
+  char data[file.size()];
+  file.readBytes(data, file.size());
   file.close();
-  st1 = buf.get()[0] - '0';
-  st2 = buf.get()[1] - '0';
-  st3 = buf.get()[2] - '0';
-  st4 = buf.get()[3] - '0';
-  Serial.println("Read data" + st1 + st2 + st3 +st4);
-
+  st1 = toInt(data[0]);
+  st2 = toInt(data[1]);
+  st3 = toInt(data[2]);
+  st4 = toInt(data[3]);
+  
 }
 
 void withInternet(){
