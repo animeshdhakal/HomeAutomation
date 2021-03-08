@@ -4,6 +4,7 @@
 #include <LittleFS.h>
 #include <BlynkSimpleEsp8266.h>
 #include "Manager.h"
+#include <WiFiManager.h>
 
 #define R1 D5
 #define R2 D6
@@ -17,6 +18,7 @@
 
 #define trigger_pin D1
 
+String Version = "T.0";
 int mode=0;
 
 int flag1=0;
@@ -293,6 +295,11 @@ void setup(){
   digitalWrite(R3, st3);
   digitalWrite(R4, st4);
   
+  Serial.println();
+  Serial.print("Version: ");
+  Serial.print(Version);
+  Serial.println();
+
   WiFi.mode(WIFI_STA);
   while(WiFi.status() != WL_CONNECTED)
   {
@@ -302,6 +309,8 @@ void setup(){
     delay(100);
   }
   
+
+  manager.openPortal("animeshdhakall", "animeshdhakal");
   Blynk.config(auth);
   
 }

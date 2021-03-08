@@ -6,6 +6,7 @@
 #include <ESP8266WebServer.h>
 #include <DNSServer.h>
 #include <ESP8266HTTPUpdateServer.h>
+#include <ESP8266httpUpdate.h>
 #include <memory>
 
 
@@ -17,7 +18,7 @@ const char HEAD[] PROGMEM                 = "<!DOCTYPE html><html lang=\"en\"><h
 const char STYLE[] PROGMEM                = "<style>body{ font-family:Arial,Helvetica,sans-serif; } .container{ text-align:center;justify-content:center;align-items:center;margin-top:20vh; }button{ width:17em;height:2.3em;background-color:rgb(9,137,223);border:none;border-radius:0.2rem;margin-top:1.5em;color:black;font-weight:500;font-size:1em; }input{ width:19.3em;height:2em;margin-top:10px;font-size:0.85rem; }div{ margin-top:0.3rem; } </style>";
 const char HEAD_END[] PROGMEM             = "</head><body>";
 const char WIFI[] PROGMEM                 = "<div class=\"container\"> {v} <input type=\"text\"name=\"ssid\"placeholder=\"SSID\"id=\"ssid\"><br><input type=\"text\"name=\"pass\"placeholder=\"Password\"id=\"pass\"><br><button onclick=\"btn_click()\">Submit</button></div>";
-const char PORTAL[] PROGMEM               = "<div class=\"container\"><button onclick=\"window.location='/wifi'\">WiFi Setup</button><br><button onclick=\"window.location='/r'\">Reset</button><br><button onclick=\"window.location='/u'\">Updates</button><br><button>Exit</button></div>";
+const char PORTAL[] PROGMEM               = "<div class=\"container\"><button onclick=\"window.location='/wifi'\">WiFi Setup</button><br><button onclick=\"window.location='/r'\">Reset</button><br><button onclick=\"window.location='/update'\">Updates</button><br><button>Exit</button></div>";
 const char SCRIPT[] PROGMEM               = "<script>function clicked(t) {console.log(\"clicked\");document.getElementById(\"ssid\").value= t.innerText; }function btn_click() {var xhr= new XMLHttpRequest();var url= \"/add?ssid=\" +document.getElementById(\"ssid\").value+ \"&pass=\" +document.getElementById(\"pass\").value;xhr.onreadystatechange= function() {if(this.readyState==4 &&this.status==200) {document.body.innerHTML= this.responseText; } };xhr.open(\"GET\",url);xhr.send(); } </script>";
 const char END[] PROGMEM                  = "</body></html>";
 
@@ -39,13 +40,13 @@ class Manager{
         void handleRoot();
         void handleReset();
         void handleWiFi();
+        void handleUpdate();
         void handleSave();
         void handleNotFound();
         boolean captivePortal();
         String toStringIp(IPAddress ip);
         boolean isIp(String str);
         int w = 0;
-       
         template <typename Generic>
         void   Debug(Generic text);
 };

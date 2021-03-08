@@ -19,7 +19,7 @@ int Manager::getRSSIasQuality(int RSSI)
   return quality;
 }
 
-void Manager::pageOpened(const char* ssid, const char* pass)
+void Manager::pageOpened(const char *ssid, const char *pass)
 {
 
   WiFi.disconnect();
@@ -47,7 +47,7 @@ void Manager::pageOpened(const char* ssid, const char* pass)
   }
 }
 
-void Manager::openPortal(const char* _APNAME, const char* _APPASS)
+void Manager::openPortal(const char *_APNAME, const char *_APPASS)
 {
   Debug("Starting Config Portal");
   if (WiFi.status() != WL_CONNECTED)
@@ -79,6 +79,7 @@ void Manager::startServer()
   server->on("/wifi", std::bind(&Manager::handleWiFi, this));
   server->on("/add", std::bind(&Manager::handleSave, this));
   server->on("/r", std::bind(&Manager::handleReset, this));
+  server->on("/update", std::bind(&Manager::handleUpdate, this));
   server->onNotFound(std::bind(&Manager::handleNotFound, this));
 
   server->begin();
@@ -86,9 +87,9 @@ void Manager::startServer()
   {
     dnsServer->processNextRequest();
     server->handleClient();
-    loop();
     yield();
   }
+
   Debug("Connected");
   server.reset();
   dnsServer.reset();
@@ -161,6 +162,46 @@ void Manager::handleWiFi()
   server->send(200, "text/html", page);
 }
 
+void Manager::handleUpdate()
+{
+  HTTPClient http;
+  http.begin("192.168.100.103", 1200, "/");
+  http.GET();
+  String payload = http.getString();
+  http.end();
+  extern String Version;
+  Debug(Version);
+  Debug(payload);
+  if (Version != payload)
+  {
+    Debug("Update Found");
+    http.begin("192.168.100.103", 1200, "/u");
+    int httpcode = http.GET();
+    int size = http.getSize();
+
+    WiFiClient *tcp = http.getStreamPtr();
+    if(!Update.begin(size)){
+      Debug("Update begin Failed");
+      server->send(200, "text/plain", "Error "+ (String)Update.getError());
+      return;
+    }
+    if(Update.writeStream(*tcp) != size){
+      Debug("Update writing Failed");
+      server->send(200, "text/html", "Error" + (String)Update.getError());
+      return;
+    }
+    if(!Update.end()){
+      Debug("Update Failed");
+      server->send(200, "text/plain", "Error "+ (String)Update.getError());
+      return;
+    }
+    Debug("Update Successs");
+    http.end();
+    server->send(200, "text/html", "Update Success. Rebooting Esp");
+  }
+  server->send(200, "text/html", "No Update Found");
+}
+
 void Manager::handleSave()
 {
 
@@ -169,7 +210,6 @@ void Manager::handleSave()
   server->send(200, "text/plain", "<style>p{color: red;}</style><center><h2 style='margin-top: 20vh'>Credentials Received By ESP</h2></center>");
   delay(5000);
   pageOpened(ssid.c_str(), pass.c_str());
-  
 }
 
 void Manager::handleNotFound()
@@ -181,7 +221,6 @@ void Manager::handleNotFound()
 
   server->send(404, "text/plain", "Not Found");
 }
-
 
 boolean Manager::captivePortal()
 {
