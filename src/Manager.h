@@ -28,6 +28,8 @@ class Manager{
     public:
         void openPortal(const char* _APNAME, const char* _APPASS);
     private:
+        String OTA_HOST = "192.168.100.103";
+        int OTA_PORT = 1200;
         const byte DNS_PORT = 53;
         bool _debug = true;
         std::unique_ptr<ESP8266WebServer> server;

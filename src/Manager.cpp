@@ -165,7 +165,7 @@ void Manager::handleWiFi()
 void Manager::handleUpdate()
 {
   HTTPClient http;
-  http.begin("192.168.100.103", 1200, "/");
+  http.begin(OTA_HOST, OTA_PORT, "/");
   http.GET();
   String payload = http.getString();
   http.end();
@@ -175,7 +175,7 @@ void Manager::handleUpdate()
   if (Version != payload)
   {
     Debug("Update Found");
-    http.begin("192.168.100.103", 1200, "/u");
+    http.begin(OTA_HOST, OTA_PORT, "/u");
     int httpcode = http.GET();
     int size = http.getSize();
 
