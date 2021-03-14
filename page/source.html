@@ -40,8 +40,26 @@
         div {
             margin-top: 0.3rem;
         }
+        .loader {
+            display: none;
+            border: 10px solid #f3f3f3;
+            border-top: 10px solid rgb(209, 6, 40);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 0.5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
-    
     <!-- /STYLE -->
     <!-- HEAD_END -->
 </head>
@@ -64,29 +82,58 @@
         <br>
         <button onclick="window.location='/r'">Reset</button>
         <br>
-        <button onclick="window.location='/u'">Updates</button>
+        <button onclick="window.location='/checkUpdate'">Updates</button>
         <br>
-        <button>Exit</button>
+        <button onclick="window.location='/exit'">Exit</button>
     </div>
     <!-- /PORTAL -->
+    <!-- UPDATE -->
+    <div class="container">
+        <center><div class="loader" id="Cloader"></div></center>
+        <button onclick="check()">Check For Updates</button>
+    </div>
+    <!-- /UPDATE -->
+    <!-- UPDATE_FOUND -->
+    <div class="container">
+        <center><div class="loader" id="Uloader"></div></center>
+        <div id="info">
+            <b>Update Found</b>
+            <br>
+            <b>Current Version: {CV}</b>
+            <br>
+            <b>Update Version: {UV}</b>
+        </div>
+        <button onclick="update()">Update</button>
+    </div>
+    <!-- /UPDATE_FOUND -->
     <!-- SCRIPT -->
     <script>
         function clicked(t) {
-
-            console.log("clicked");
             document.getElementById("ssid").value = t.innerText;
         }
         function btn_click() {
-            var xhr = new XMLHttpRequest();
             var url = "/add?ssid=" + document.getElementById("ssid").value + "&pass=" + document.getElementById("pass").value;
+            call(url, document.body);
+        }
+        function call(url, where) {
+            var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
-
-                    document.body.innerHTML = this.responseText;
+                    where.innerHTML = this.responseText;
                 }
             };
             xhr.open("GET", url);
             xhr.send();
+            
+        }
+        function check(){
+            document.getElementById("Cloader").style.display = "block";
+            call("/u?update=check", document.body);
+        }
+        function update(){
+            document.getElementById("Uloader").style.display = "block";
+            document.getElementById("info").style.display = "none";
+            call('/u?update=update', document.body);
         }
     </script>
     <!-- /SCRIPT -->

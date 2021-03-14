@@ -3,8 +3,8 @@
 #define BLYNK_PRINT Serial
 #include <LittleFS.h>
 #include <BlynkSimpleEsp8266.h>
+#include <ArduinoOTA.h>
 #include "Manager.h"
-#include <WiFiManager.h>
 
 #define R1 D5
 #define R2 D6
@@ -18,7 +18,6 @@
 
 #define trigger_pin D1
 
-String Version = "T.0";
 int mode=0;
 
 int flag1=0;
@@ -298,8 +297,10 @@ void setup(){
   Serial.println();
   Serial.print("Version: ");
   Serial.print(Version);
+  Serial.print(ESP.getFreeSketchSpace());
   Serial.println();
 
+  WiFi.begin("unique nepal", "brother$");
   WiFi.mode(WIFI_STA);
   while(WiFi.status() != WL_CONNECTED)
   {
@@ -308,14 +309,13 @@ void setup(){
     withoutInternet();
     delay(100);
   }
-  
-
-  manager.openPortal("animeshdhakall", "animeshdhakal");
+  ArduinoOTA.begin();
+  manager.openPortal("animeshdhakal", "animeshdhakal");
   Blynk.config(auth);
-  
 }
 
 void loop(){
+  ArduinoOTA.handle();
   Blynk.run();
   if(mode==1){withInternet();}else{withoutInternet();}
   checkBtn();

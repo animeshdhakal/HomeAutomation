@@ -72,26 +72,25 @@ void Manager::startServer()
   Debug(WiFi.softAPIP());
   server.reset(new ESP8266WebServer(80));
   dnsServer.reset(new DNSServer);
-  httpUpdate.reset(new ESP8266HTTPUpdateServer);
-  httpUpdate->setup(server.get(), "/u");
   dnsServer->start(DNS_PORT, "*", WiFi.softAPIP());
   server->on("/", std::bind(&Manager::handleRoot, this));
   server->on("/wifi", std::bind(&Manager::handleWiFi, this));
   server->on("/add", std::bind(&Manager::handleSave, this));
-  server->on("/r", std::bind(&Manager::handleReset, this));
-  server->on("/update", std::bind(&Manager::handleUpdate, this));
-  server->onNotFound(std::bind(&Manager::handleNotFound, this));
+  server->on("/exit", std::bind(&Manager::handleExit, this));
+  server->on("/info", std::bind(&Manager::handleInfo, this));
+  server->on("/u", std::bind(&Manager::handleUpdateRoot, this));
 
   server->begin();
   while (w == 0)
   {
     dnsServer->processNextRequest();
     server->handleClient();
+    loop();
     yield();
   }
-
-  Debug("Connected");
+  server->stop();
   server.reset();
+  dnsServer->stop();
   dnsServer.reset();
   w = 0;
 }
@@ -111,10 +110,11 @@ void Manager::handleRoot()
   server->send(200, "text/html", page);
 }
 
-void Manager::handleReset()
+void Manager::handleExit()
 {
-  ESP.reset();
-  delay(2000);
+  w = 1;
+  WiFi.mode(WIFI_STA);
+  WiFi.begin();
 }
 
 void Manager::handleWiFi()
@@ -162,44 +162,94 @@ void Manager::handleWiFi()
   server->send(200, "text/html", page);
 }
 
-void Manager::handleUpdate()
+void Manager::handleUpdateRoot()
 {
-  HTTPClient http;
-  http.begin(OTA_HOST, OTA_PORT, "/");
-  http.GET();
-  String payload = http.getString();
-  http.end();
-  extern String Version;
-  Debug(Version);
-  Debug(payload);
-  if (Version != payload)
+  if (server->arg("update") == "check")
   {
-    Debug("Update Found");
+    HTTPClient http;
+    http.begin(OTA_HOST, OTA_PORT, "/");
+    http.setUserAgent(F("Animesh"));
+    http.addHeader(F("TYPE"), F("ESP"));
+    int status = http.GET();
+    String payload = http.getString();
+    if (status != 200)
+    {
+      Debug("Server Not Responding Properly");
+      Debug(payload);
+      server->send(200, "text/plain", "Server Not Responding Properly");
+      return;
+    }
+    Debug(Version);
+    Debug(payload);
+    http.end();
+    if (Version != payload)
+    {
+      String page = FPSTR(HEAD);
+      page.replace("{t}", "Updater");
+      page += FPSTR(STYLE);
+      page += FPSTR(HEAD_END);
+      page += FPSTR(UPDATE_FOUND);
+      page.replace("{CV}", Version);
+      page.replace("{UV}", payload);
+      page += FPSTR(SCRIPT);
+      page += FPSTR(END);
+      server->send(200, "text/html", page);
+    }
+    else
+    {
+      server->send(200, "text/html", "You are up to date");
+    }
+  }
+  else if (server->arg("update") == "update")
+  {
+    HTTPClient http;
+    Debug("Update Starting");
     http.begin(OTA_HOST, OTA_PORT, "/u");
+    http.setUserAgent(F("Animesh"));
+    http.addHeader(F("TYPE"), F("ESP"));
     int httpcode = http.GET();
     int size = http.getSize();
-
+    Debug(httpcode);
+    Debug(size);
     WiFiClient *tcp = http.getStreamPtr();
-    if(!Update.begin(size)){
+    if (!Update.begin(size))
+    {
       Debug("Update begin Failed");
-      server->send(200, "text/plain", "Error "+ (String)Update.getError());
+      server->send(200, "text/plain", "Error " + (String)Update.getError());
+      Update.end();
       return;
     }
-    if(Update.writeStream(*tcp) != size){
+    if (Update.writeStream(*tcp) != size)
+    {
       Debug("Update writing Failed");
       server->send(200, "text/html", "Error" + (String)Update.getError());
+      Update.end();
       return;
     }
-    if(!Update.end()){
+    if (!Update.end())
+    {
       Debug("Update Failed");
-      server->send(200, "text/plain", "Error "+ (String)Update.getError());
+      server->send(200, "text/plain", "Error " + (String)Update.getError());
+      Update.end();
       return;
     }
     Debug("Update Successs");
     http.end();
     server->send(200, "text/html", "Update Success. Rebooting Esp");
+    delay(1000);
+    ESP.reset();
   }
-  server->send(200, "text/html", "No Update Found");
+  else
+  {
+    String page = FPSTR(HEAD);
+    page.replace("{t}", "Updater");
+    page += FPSTR(STYLE);
+    page += FPSTR(HEAD_END);
+    page += FPSTR(UPDATE);
+    page += FPSTR(SCRIPT);
+    page += FPSTR(END);
+    server->send(200, "text/html", page);
+  }
 }
 
 void Manager::handleSave()
@@ -212,15 +262,24 @@ void Manager::handleSave()
   pageOpened(ssid.c_str(), pass.c_str());
 }
 
-void Manager::handleNotFound()
-{
-  if (captivePortal())
-  {
-    return;
-  }
-
-  server->send(404, "text/plain", "Not Found");
+void Manager::handleInfo(){
+  String page;
+  page += "<center>";
+  page += "<h3>Free Heap: " + (String)ESP.getFreeHeap() + "</h3>";
+  page += "<h3>Free SketchSize: " + (String)ESP.getFreeSketchSpace() + "</h3>";
+  page += "<h3>Sdk Version: " + (String)ESP.getSdkVersion() + "</h3>";
+  page += "<h3>Chip ID: " + (String)ESP.getChipId() + "</h3>";
+  page += "<h3>Flash Chip Size: " + (String)ESP.getFlashChipSize() + "</h3>";
+  page += "<h3>CPU Frequency: " + (String)ESP.getCpuFreqMHz() + "</h3>";
+  page += "<h3>Last Reset Reason: " + (String)ESP.getResetInfo() + "</h3>";
+  page += "<h3>Vcc: " + (String)ESP.getVcc() + "</h3>";
+  page += "<h3>Md5 Hash of Sketch: " + (String)ESP.getSketchMD5() + "</h3>";
+  page += "<h3>Flash Chip Speed: " + (String)ESP.getFlashChipSpeed() + "</h3>";
+  page += "</center>";
+  server->send(200, "text/html", page);
 }
+
+
 
 boolean Manager::captivePortal()
 {
@@ -261,10 +320,8 @@ String Manager::toStringIp(IPAddress ip)
 template <typename Generic>
 void Manager::Debug(Generic text)
 {
-  if (_debug)
-  {
-    Serial.print("**M: ");
-    Serial.println(text);
-  }
+
+  Serial.print("**M: ");
+  Serial.println(text);
 }
 Manager manager;
