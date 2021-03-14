@@ -1,38 +1,29 @@
 import os, sys
 
 def help():
-    print("""
-        Lists of commands :
-        
-        `python3 build/get.py install` for installation,
+    m = """
+    Lists of commands :
+    `python3 build/get.py install` for installation,
+    `python3 build/get.py reinstall` for reinstallation,
+    `python3 build/get.py update` for updating to desired version
 
-        `python3 build/get.py reinstallation` for reinstallation,
-
-        `python3 build/get.py update` for updating to desired version
-
-        This Script is Made only for HomeAutomation Project
-        Made by: Mr. Animesh Dhakal
-    """)
-
-def cmd_install():
-    ci = f"""
-        echo "Installing Requirements for HomeAutomation" \n
-        git submodule update --init \n
-        cd ./build/esp8266/ \n
-        git checkout tags/2.7.4 \n
-        echo "Installing Requirements for Esp8266"
-        git submodule update --init \n
-        cd tools \n
-        python{sys.version_info[0]} get.py \n
+    This Script is Made only for HomeAutomation Project
+    Made by: Mr. Animesh Dhakal
     """
-    os.system(ci)
+    print(m)
 
-def update():
-    ver = input("Enter the version you want:  ")
+def cmd_install(ver, download):
+    if(download):
+        ci = """
+            echo "Installing Requirements for HomeAutomation" \n
+            git submodule update --init \n
+        """
+        os.system(ci)
+
     if ver == "master":
+        print("Installing from master")
         ci = f"""
             cd ./build/esp8266/ \n
-            git checkout master -f \n
             git submodule update --init -f \n
             cd tools \n 
             python{sys.version_info[0]} get.py \n
@@ -42,6 +33,7 @@ def update():
         ci = f"""
             cd ./build/esp8266/ \n
             git checkout tags/{ver} -f \n
+            git submodule update --init -f \n
             cd tools \n 
             python{sys.version_info[0]} get.py \n
         """
@@ -49,26 +41,45 @@ def update():
         
 
 def install():
-    if not os.listdir("./build/esp8266"):
-        cmd_install();
-
-    else:
-        print("Already Installed")
+    print("hdsgdj")
+    try:
+        if not os.listdir("./build/esp8266"):
+            ver = input("Enter the version you want: ")
+            cmd_install(ver, True)
+        else:
+            print("Already Installed")
+    except:
+        ver = input("Enter the version you want: ")
+        cmd_install(ver, True)
 
 def reinstall():
-    if input("Are you sure you (y/n): ") == 'y':
+
+    if input("Are you sure (y/n): ") == 'y':
         print("Starting Reinstallation")
         os.system("rm -rf ./build/esp8266 \n rm -rf ./build/makeEspArduino \n rm -rf ./.git/modules \n")
-        cmd_install()
+        ver = input("Enter the version you want: ")
+        cmd_install(ver, True)
+
+    else:
+        pass
 
 def main():
-    if(sys.argv[1]):
-        if sys.argv[1] == 'install': install()
-        elif sys.argv[1] == 'update': update()
-        elif sys.argv[1] == 'reinstall': reinstall()
-        else: help()
-    else:
+    try:
+        if(sys.argv[1]):
+            if sys.argv[1] == 'install': 
+                install()
+            elif sys.argv[1] == 'update': 
+                ver = input("Enter the version you want: ")
+                cmd_install(ver, False)
+            elif sys.argv[1] == 'reinstall': 
+                reinstall()
+            else: 
+                help()
+        else:
+            help()
+    except:
         help()
+    
 
 
 if __name__ == '__main__':
