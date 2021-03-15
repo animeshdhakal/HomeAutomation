@@ -82,7 +82,7 @@
         <br>
         <button onclick="window.location='/r'">Reset</button>
         <br>
-        <button onclick="window.location='/checkUpdate'">Updates</button>
+        <button onclick="window.location='/u'">Updates</button>
         <br>
         <button onclick="window.location='/exit'">Exit</button>
     </div>
@@ -113,13 +113,15 @@
         }
         function btn_click() {
             var url = "/add?ssid=" + document.getElementById("ssid").value + "&pass=" + document.getElementById("pass").value;
-            call(url, document.body);
+            call(url, function(d){
+                document.body.innerHTML = d;
+            });
         }
-        function call(url, where) {
+        function call(url, callback) {
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
-                    where.innerHTML = this.responseText;
+                    callback(this.responseText);
                 }
             };
             xhr.open("GET", url);
@@ -128,12 +130,16 @@
         }
         function check(){
             document.getElementById("Cloader").style.display = "block";
-            call("/u?update=check", document.body);
+            call("/u?update=check", function(d){
+                document.body.innerHTML = d;
+            });
         }
         function update(){
             document.getElementById("Uloader").style.display = "block";
             document.getElementById("info").style.display = "none";
-            call('/u?update=update', document.body);
+            call('/u?update=update', function(d){
+                document.body.innerHTML = d;
+            });
         }
     </script>
     <!-- /SCRIPT -->

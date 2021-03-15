@@ -97,10 +97,7 @@ void Manager::startServer()
 
 void Manager::handleRoot()
 {
-  if (captivePortal())
-  {
-    return;
-  }
+  if (captivePortal()) return;
   String page = FPSTR(HEAD);
   page.replace("{t}", "Manager Portal");
   page += FPSTR(STYLE);
@@ -166,7 +163,7 @@ void Manager::handleUpdateRoot()
 {
   if (server->arg("update") == "check")
   {
-    if (WiFi.status() != WL_CONNECTED)
+    if (WiFi.status() == WL_CONNECTED)
     {
 
       HTTPClient http;
@@ -262,7 +259,6 @@ void Manager::handleUpdateRoot()
 
 void Manager::handleSave()
 {
-
   String ssid = server->arg("ssid");
   String pass = server->arg("pass");
   server->send(200, "text/plain", "<style>p{color: red;}</style><center><h2 style='margin-top: 20vh'>Credentials Received By ESP</h2></center>");
