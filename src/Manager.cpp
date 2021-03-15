@@ -166,38 +166,46 @@ void Manager::handleUpdateRoot()
 {
   if (server->arg("update") == "check")
   {
-    HTTPClient http;
-    http.begin(OTA_HOST, OTA_PORT, "/");
-    http.setUserAgent(F("Animesh"));
-    http.addHeader(F("TYPE"), F("ESP"));
-    int status = http.GET();
-    String payload = http.getString();
-    if (status != 200)
+    if (WiFi.status() != WL_CONNECTED)
     {
-      Debug("Server Not Responding Properly");
+
+      HTTPClient http;
+      http.begin(OTA_HOST, OTA_PORT, "/");
+      http.setUserAgent(F("Animesh"));
+      http.addHeader(F("TYPE"), F("ESP"));
+      int status = http.GET();
+      String payload = http.getString();
+      if (status != 200)
+      {
+        Debug("Server Not Responding Properly");
+        Debug(payload);
+        server->send(200, "text/plain", "Server Not Responding Properly");
+        return;
+      }
+      Debug(Version);
       Debug(payload);
-      server->send(200, "text/plain", "Server Not Responding Properly");
-      return;
-    }
-    Debug(Version);
-    Debug(payload);
-    http.end();
-    if (Version != payload)
-    {
-      String page = FPSTR(HEAD);
-      page.replace("{t}", "Updater");
-      page += FPSTR(STYLE);
-      page += FPSTR(HEAD_END);
-      page += FPSTR(UPDATE_FOUND);
-      page.replace("{CV}", Version);
-      page.replace("{UV}", payload);
-      page += FPSTR(SCRIPT);
-      page += FPSTR(END);
-      server->send(200, "text/html", page);
+      http.end();
+      if (Version != payload)
+      {
+        String page = FPSTR(HEAD);
+        page.replace("{t}", "Updater");
+        page += FPSTR(STYLE);
+        page += FPSTR(HEAD_END);
+        page += FPSTR(UPDATE_FOUND);
+        page.replace("{CV}", Version);
+        page.replace("{UV}", payload);
+        page += FPSTR(SCRIPT);
+        page += FPSTR(END);
+        server->send(200, "text/html", page);
+      }
+      else
+      {
+        server->send(200, "text/html", "You are up to date");
+      }
     }
     else
     {
-      server->send(200, "text/html", "You are up to date");
+      server->send(200, "text/plain", "Please Connect to the WiFi");
     }
   }
   else if (server->arg("update") == "update")
@@ -262,7 +270,8 @@ void Manager::handleSave()
   pageOpened(ssid.c_str(), pass.c_str());
 }
 
-void Manager::handleInfo(){
+void Manager::handleInfo()
+{
   String page;
   page += "<center>";
   page += "<h3>Free Heap: " + (String)ESP.getFreeHeap() + "</h3>";
@@ -278,8 +287,6 @@ void Manager::handleInfo(){
   page += "</center>";
   server->send(200, "text/html", page);
 }
-
-
 
 boolean Manager::captivePortal()
 {
