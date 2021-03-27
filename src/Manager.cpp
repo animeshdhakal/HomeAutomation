@@ -1,6 +1,7 @@
 /******Code Written By Mr. Animesh Dhakal******/
 #include "Manager.h"
 
+
 int Manager::getRSSIasQuality(int RSSI)
 {
   int quality = 0;
@@ -79,7 +80,7 @@ void Manager::startServer()
   server->on("/exit", std::bind(&Manager::handleExit, this));
   server->on("/info", std::bind(&Manager::handleInfo, this));
   server->on("/u", std::bind(&Manager::handleUpdateRoot, this));
-
+  
   server->begin();
   while (w == 0)
   {
@@ -217,6 +218,8 @@ void Manager::handleUpdateRoot()
     Debug(httpcode);
     Debug(size);
     WiFiClient *tcp = http.getStreamPtr();
+    Update.runAsync(true);
+  
     if (!Update.begin(size))
     {
       Debug("Update begin Failed");
@@ -231,7 +234,8 @@ void Manager::handleUpdateRoot()
       Update.end();
       return;
     }
-    if (!Update.end())
+    
+    if (!Update.end(true))
     {
       Debug("Update Failed");
       server->send(200, "text/plain", "Error " + (String)Update.getError());
@@ -269,18 +273,22 @@ void Manager::handleSave()
 void Manager::handleInfo()
 {
   String page;
-  page += "<center>";
+  page += "<style>body{ font-family:Avenir,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;text-align:center;color: #2c3e50;}</style>";
+  page += "<h3>Firmware Version: " + Version + "</h3>";
   page += "<h3>Free Heap: " + (String)ESP.getFreeHeap() + "</h3>";
   page += "<h3>Free SketchSize: " + (String)ESP.getFreeSketchSpace() + "</h3>";
-  page += "<h3>Sdk Version: " + (String)ESP.getSdkVersion() + "</h3>";
-  page += "<h3>Chip ID: " + (String)ESP.getChipId() + "</h3>";
-  page += "<h3>Flash Chip Size: " + (String)ESP.getFlashChipSize() + "</h3>";
+  page += "<h3>Sdk Version: " + (String)system_get_sdk_version() + "</h3>";
+  page += "<h3>Chip ID: " + String(ESP.getChipId(), HEX) + "</h3>";
+  page += "<h3>Flash Chip ID: " + (String)ESP.getFlashChipId() + "</h3>";
+  page += "<h3>Flash Chip Size: " + (String)ESP.getFlashChipRealSize() + "</h3>";
   page += "<h3>CPU Frequency: " + (String)ESP.getCpuFreqMHz() + "</h3>";
+  page += "<h3>Boot Version: " + (String)system_get_boot_version() + "</h3>";
+  page += "<h3>Core Version: " + ESP.getCoreVersion() + "</h3>";
   page += "<h3>Last Reset Reason: " + (String)ESP.getResetInfo() + "</h3>";
   page += "<h3>Vcc: " + (String)ESP.getVcc() + "</h3>";
   page += "<h3>Md5 Hash of Sketch: " + (String)ESP.getSketchMD5() + "</h3>";
   page += "<h3>Flash Chip Speed: " + (String)ESP.getFlashChipSpeed() + "</h3>";
-  page += "</center>";
+  
   server->send(200, "text/html", page);
 }
 

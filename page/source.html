@@ -8,7 +8,11 @@
     <!-- STYLE -->
     <style>
         body {
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: Avenir, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-align: center;
+            color: #2c3e50;
         }
 
         .container {
@@ -40,6 +44,7 @@
         div {
             margin-top: 0.3rem;
         }
+
         .loader {
             display: none;
             border: 10px solid #f3f3f3;
@@ -89,13 +94,17 @@
     <!-- /PORTAL -->
     <!-- UPDATE -->
     <div class="container">
-        <center><div class="loader" id="Cloader"></div></center>
+        <center>
+            <div class="loader" id="Cloader"></div>
+        </center>
         <button onclick="check()">Check For Updates</button>
     </div>
     <!-- /UPDATE -->
     <!-- UPDATE_FOUND -->
     <div class="container">
-        <center><div class="loader" id="Uloader"></div></center>
+        <center>
+            <div class="loader" id="Uloader"></div>
+        </center>
         <div id="info">
             <b>Update Found</b>
             <br>
@@ -113,7 +122,7 @@
         }
         function btn_click() {
             var url = "/add?ssid=" + document.getElementById("ssid").value + "&pass=" + document.getElementById("pass").value;
-            call(url, function(d){
+            call(url, function (d) {
                 document.body.innerHTML = d;
             });
         }
@@ -126,18 +135,18 @@
             };
             xhr.open("GET", url);
             xhr.send();
-            
+
         }
-        function check(){
+        function check() {
             document.getElementById("Cloader").style.display = "block";
-            call("/u?update=check", function(d){
+            call("/u?update=check", function (d) {
                 document.body.innerHTML = d;
             });
         }
-        function update(){
+        function update() {
             document.getElementById("Uloader").style.display = "block";
             document.getElementById("info").style.display = "none";
-            call('/u?update=update', function(d){
+            call('/u?update=update', function (d) {
                 document.body.innerHTML = d;
             });
         }
