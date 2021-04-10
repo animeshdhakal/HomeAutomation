@@ -20,7 +20,7 @@ int Manager::getRSSIasQuality(int RSSI)
   return quality;
 }
 
-void Manager::pageOpened(const char *ssid, const char *pass)
+void Manager::connect(const char *ssid, const char *pass)
 {
 
   WiFi.disconnect();
@@ -112,8 +112,8 @@ void Manager::handleExit()
   w = 1;
   WiFi.mode(WIFI_STA);
   WiFi.begin();
+  server->send(200, "text/html", "<center style='margin-top: 20vh;'><h1>Bye Bye. See You Soon</h1></center>");
 }
-
 void Manager::handleWiFi()
 {
   if (captivePortal()) return;
@@ -183,14 +183,14 @@ void Manager::handleUpdateRoot()
       Debug(Version);
       Debug(payload);
       http.end();
-      if (Version != payload)
+      if (ESP.getSketchMD5() != payload)
       {
         String page = FPSTR(HEAD);
         page.replace("{t}", "Updater");
         page += FPSTR(STYLE);
         page += FPSTR(HEAD_END);
         page += FPSTR(UPDATE_FOUND);
-        page.replace("{CV}", Version);
+        page.replace("{CV}", ESP.getSketchMD5());
         page.replace("{UV}", payload);
         page += FPSTR(SCRIPT);
         page += FPSTR(END);
@@ -266,8 +266,8 @@ void Manager::handleSave()
   String ssid = server->arg("ssid");
   String pass = server->arg("pass");
   server->send(200, "text/plain", "<style>p{color: red;}</style><center><h2 style='margin-top: 20vh'>Credentials Received By ESP</h2></center>");
-  delay(5000);
-  pageOpened(ssid.c_str(), pass.c_str());
+  delay(1000);
+  connect(ssid.c_str(), pass.c_str());
 }
 
 void Manager::handleInfo()

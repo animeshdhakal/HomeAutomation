@@ -4,8 +4,8 @@ const fs = require('fs');
 
 console.log('starting');
 
-const inFile = 'source.html';
-const outFile = 'temp.txt';
+const inFile = './page/source.html';
+const outFile = './page/temp.txt';
 
 const defineRegEx = /<!-- ([A-Z_]+) -->/gm;
 console.log('parsing', inFile);
