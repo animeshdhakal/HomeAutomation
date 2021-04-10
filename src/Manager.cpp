@@ -79,14 +79,13 @@ void Manager::startServer()
   server->on("/add", std::bind(&Manager::handleSave, this));
   server->on("/exit", std::bind(&Manager::handleExit, this));
   server->on("/info", std::bind(&Manager::handleInfo, this));
-  server->on("/u", std::bind(&Manager::handleUpdateRoot, this));
-  
+  server->on("/u", std::bind(&Manager::handleUpdateRoot, this));  
+  server->onNotFound(std::bind(&Manager::handleRoot, this));
   server->begin();
   while (w == 0)
   {
     dnsServer->processNextRequest();
     server->handleClient();
-    loop();
     yield();
   }
   server->stop();
@@ -117,6 +116,7 @@ void Manager::handleExit()
 
 void Manager::handleWiFi()
 {
+  if (captivePortal()) return;
   String page = FPSTR(HEAD);
   page.replace("{t}", "Manager");
   page += FPSTR(STYLE);
@@ -144,14 +144,13 @@ void Manager::handleWiFi()
   for (int i = 0; i < n; i++)
   {
     int quality = getRSSIasQuality(WiFi.RSSI(indices[i]));
-    item += "<div>";
-    item += "<a href=\"#\" onclick=\"clicked(this)\">";
+    item += "<div class='a'>";
+    item += "<b><a href=\"#\" onclick=\"clicked(this)\">";
     item += WiFi.SSID(indices[i]);
-    item += "</a>";
-    item += " ";
+    item += "</a></b><b> ";
     item += quality;
     item += "%";
-    item += "</div>";
+    item += "</b></div>";
   }
   page.replace("{v}", item);
   page += FPSTR(SCRIPT);
@@ -162,6 +161,7 @@ void Manager::handleWiFi()
 
 void Manager::handleUpdateRoot()
 {
+  if (captivePortal()) return;
   if (server->arg("update") == "check")
   {
     if (WiFi.status() == WL_CONNECTED)

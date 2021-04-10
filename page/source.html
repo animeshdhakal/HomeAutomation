@@ -15,6 +15,11 @@
             color: #2c3e50;
         }
 
+        a {
+            color: black;
+            text-decoration: none;
+        }
+
         .container {
             text-align: center;
             justify-content: center;
@@ -25,21 +30,32 @@
         button {
             width: 17em;
             height: 2.3em;
-            background-color: rgb(9, 137, 223);
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
             border: none;
-            border-radius: 0.2rem;
+            border-radius: 0.3rem;
             margin-top: 1.5em;
             color: white;
             font-weight: 500;
             font-size: 1em;
         }
 
+        button:hover {
+            box-shadow: 0px 15px 20px rgba(25, 26, 25, 0.4);
+        }
+
         input {
-            width: 19.3em;
+            width: 19em;
             height: 2em;
             margin-top: 10px;
-            font-size: 0.85rem;
+            font-size: 0.90rem;
+            border: none;
+            border-bottom: 0.5px solid rgb(11, 175, 216)
         }
+
+        input:focus {
+            outline: none;
+        }
+
 
         div {
             margin-top: 0.3rem;
@@ -53,6 +69,17 @@
             width: 50px;
             height: 50px;
             animation: spin 0.5s linear infinite;
+        }
+
+        .a::after {
+            background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAAQABADASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABQcI/8QAJBAAAQQCAgIBBQAAAAAAAAAAAQIDBAUGBxESCCEAFCIxMmH/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8A1r5G+WV/rG/tKPGceqoTFOhlVrmedzHK2jiuPI7tMMlKFOzHSn2Usg9fwTzyAF4+eZmT7EyKrrrulxzLqSzlCC3lus5j82JAklJUhudFeQmRGSoJVw6odOf5yRd9z6dqtr0bbrkCtdyunZkvY3ZWsb6lmtnuMlDcgsn7HOququFA/qCPfwnQmlF65pYl1lSKa12nMgNw7/JqiCmILHotSkcoSlIPUKCe3UFXUEgegA//2Q==');
+            background-repeat: no-repeat;
+            background-position: 2px 4.4px;
+            background-size: 22px 22px;
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            content: "";
         }
 
         @keyframes spin {
@@ -74,11 +101,13 @@
     <!-- WIFI -->
     <div class="container">
         {v}
-        <input type="text" name="ssid" placeholder="SSID" id="ssid">
-        <br>
-        <input type="text" name="pass" placeholder="Password" id="pass">
-        <br>
-        <button onclick="btn_click()">Submit</button>
+        <div style="margin-top: 1em;">
+            <input type="text" name="ssid" placeholder="SSID" id="ssid">
+            <br>
+            <input type="text" name="pass" placeholder="Password" id="pass">
+            <br>
+            <button onclick="btn_click()">Submit</button>
+        </div>
     </div>
     <!-- /WIFI -->
     <!-- PORTAL -->
