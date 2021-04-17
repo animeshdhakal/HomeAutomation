@@ -28,6 +28,8 @@ class Manager{
         String OTA_HOST = "update-server-ad.herokuapp.com";
         int OTA_PORT = 80;
         const byte DNS_PORT = 53;
+        char *APNAME;
+        char *APPASS;
         bool _debug = true;
         std::unique_ptr<ESP8266WebServer> server;
         std::unique_ptr<DNSServer> dnsServer;

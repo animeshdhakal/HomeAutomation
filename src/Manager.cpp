@@ -44,23 +44,25 @@ void Manager::connect(const char *ssid, const char *pass)
   else
   {
     Debug("Connection time out starting the AP");
-    openPortal(WiFi.softAPSSID().c_str(), WiFi.softAPPSK().c_str());
+    openPortal(APNAME, APPASS);
   }
 }
 
 void Manager::openPortal(const char *_APNAME, const char *_APPASS)
 {
   Debug("Starting Config Portal");
+  APNAME = (char*)_APNAME;
+  APPASS = (char *)_APPASS;
   if (WiFi.status() != WL_CONNECTED)
   {
-    WiFi.disconnect();
+    wifi_station_disconnect();
     WiFi.mode(WIFI_AP);
     WiFi.softAP(_APNAME, _APPASS);
   }
   else
   {
     WiFi.mode(WIFI_AP_STA);
-    WiFi.softAP(_APNAME, _APPASS);
+    WiFi.softAP(APNAME, APPASS);
   }
 
   startServer();
@@ -109,10 +111,11 @@ void Manager::handleRoot()
 
 void Manager::handleExit()
 {
+  server->send(200, "text/html", "<center style='margin-top: 20vh;'><h1>Bye Bye. See You Soon</h1></center>");
+  delay(1000);
   w = 1;
   WiFi.mode(WIFI_STA);
   WiFi.begin();
-  server->send(200, "text/html", "<center style='margin-top: 20vh;'><h1>Bye Bye. See You Soon</h1></center>");
 }
 void Manager::handleWiFi()
 {
@@ -288,6 +291,11 @@ void Manager::handleInfo()
   page += "<h3>Vcc: " + (String)ESP.getVcc() + "</h3>";
   page += "<h3>Md5 Hash of Sketch: " + (String)ESP.getSketchMD5() + "</h3>";
   page += "<h3>Flash Chip Speed: " + (String)ESP.getFlashChipSpeed() + "</h3>";
+  String con = WiFi.status() == WL_CONNECTED ? "Connected" : "Not Connected";
+  page += "<h3>Currently Stored SSID: " + (String)WiFi.SSID() + "</h3>";
+  page += "<h3>Connection Status: " + con + "</h3>";
+  page += "<h3>WiFi IP: " + toStringIp(WiFi.localIP()) + "</h3>";
+  page += "<h3>AP IP: " + toStringIp(WiFi.softAPIP()) + "</h3>";
   
   server->send(200, "text/html", page);
 }
