@@ -4,7 +4,6 @@ import os, sys
 def help():
     c = "Lists of commands : \n"
     c += "`python3 build/get.py install` for installation, \n"
-    c += "`python3 build/get.py install` for installation, \n"
     c += "`python3 build/get.py reinstall` for reinstallation, \n"
     c += "`python3 build/get.py update` for updating to desired version \n\n"
     c += "This Script is Made only for HomeAutomation Project \n"
@@ -41,11 +40,12 @@ def cmd_install(ver, download):
 
 
 def install():
-    if not os.path.exists("./build/esp8266"):
+    if not os.path.exists("./build/esp8266/cores"):
         ver = input("Enter the version you want: ")
         cmd_install(ver, True)
     else:
         print("Already Installed")
+    
 
 
 def reinstall():
