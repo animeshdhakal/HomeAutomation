@@ -94,13 +94,12 @@ BLYNK_WRITE(V4){
 }
 
 void readFS(){
-  
+
   File file = LittleFS.open("./config.json", "r");
   if(!file){
     file.close();
     File file = LittleFS.open("./config.json", "w");
-    file.write("1111");
-    
+    file.write("1111");  
   }
   char data[file.size()];
   file.readBytes(data, file.size());
@@ -293,12 +292,6 @@ void setup(){
   digitalWrite(R2, st2);
   digitalWrite(R3, st3);
   digitalWrite(R4, st4);
-  
-  Serial.println();
-  Serial.print("Version: ");
-  Serial.print(Version);
-  Serial.print(ESP.getFreeSketchSpace());
-  Serial.println();
 
   WiFi.begin("unique nepal", "brother$");
   WiFi.mode(WIFI_STA);

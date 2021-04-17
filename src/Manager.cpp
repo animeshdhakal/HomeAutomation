@@ -52,7 +52,7 @@ void Manager::openPortal(const char *_APNAME, const char *_APPASS)
 {
   Debug("Starting Config Portal");
   APNAME = (char*)_APNAME;
-  APPASS = (char *)_APPASS;
+  APPASS = (char*)_APPASS;
   if (WiFi.status() != WL_CONNECTED)
   {
     wifi_station_disconnect();
@@ -221,8 +221,7 @@ void Manager::handleUpdateRoot()
     Debug(httpcode);
     Debug(size);
     WiFiClient *tcp = http.getStreamPtr();
-    Update.runAsync(true);
-  
+     
     if (!Update.begin(size))
     {
       Debug("Update begin Failed");
@@ -278,13 +277,13 @@ void Manager::handleInfo()
   String page;
   page += "<style>body{ font-family:Avenir,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;text-align:center;color: #2c3e50;}</style>";
   page += "<h3>Firmware Version: " + Version + "</h3>";
-  page += "<h3>Free Heap: " + (String)ESP.getFreeHeap() + "</h3>";
-  page += "<h3>Free SketchSize: " + (String)ESP.getFreeSketchSpace() + "</h3>";
+  page += "<h3>Free Heap: " + (String)ESP.getFreeHeap() + " Bytes</h3>";
+  page += "<h3>Free SketchSize: " + (String)ESP.getFreeSketchSpace() + " Bytes</h3>";
   page += "<h3>Sdk Version: " + (String)system_get_sdk_version() + "</h3>";
   page += "<h3>Chip ID: " + String(ESP.getChipId(), HEX) + "</h3>";
   page += "<h3>Flash Chip ID: " + (String)ESP.getFlashChipId() + "</h3>";
   page += "<h3>Flash Chip Size: " + (String)ESP.getFlashChipRealSize() + "</h3>";
-  page += "<h3>CPU Frequency: " + (String)ESP.getCpuFreqMHz() + "</h3>";
+  page += "<h3>CPU Frequency: " + (String)ESP.getCpuFreqMHz() + " MHz</h3>";
   page += "<h3>Boot Version: " + (String)system_get_boot_version() + "</h3>";
   page += "<h3>Core Version: " + ESP.getCoreVersion() + "</h3>";
   page += "<h3>Last Reset Reason: " + (String)ESP.getResetInfo() + "</h3>";
@@ -296,7 +295,7 @@ void Manager::handleInfo()
   page += "<h3>Connection Status: " + con + "</h3>";
   page += "<h3>WiFi IP: " + toStringIp(WiFi.localIP()) + "</h3>";
   page += "<h3>AP IP: " + toStringIp(WiFi.softAPIP()) + "</h3>";
-  
+
   server->send(200, "text/html", page);
 }
 
