@@ -152,8 +152,9 @@ void Manager::handleWiFi()
     item += WiFi.SSID(indices[i]);
     item += "</a></b><b> ";
     item += quality;
-    item += "%";
-    item += "</b></div>";
+    item += "%</b>";
+    item += FPSTR(ICON);
+    item += "</div>";
   }
   page.replace("{v}", item);
   page += FPSTR(SCRIPT);
@@ -212,14 +213,11 @@ void Manager::handleUpdateRoot()
   else if (server->arg("update") == "update")
   {
     HTTPClient http;
-    Debug("Update Starting");
     http.begin(OTA_HOST, OTA_PORT, "/u");
     http.setUserAgent(F("Animesh"));
     http.addHeader(F("TYPE"), F("ESP"));
     int httpcode = http.GET();
     int size = http.getSize();
-    Debug(httpcode);
-    Debug(size);
     WiFiClient *tcp = http.getStreamPtr();
      
     if (!Update.begin(size))
@@ -335,6 +333,7 @@ String Manager::toStringIp(IPAddress ip)
   res += String(((ip >> 8 * 3)) & 0xFF);
   return res;
 }
+
 template <typename Generic>
 void Manager::Debug(Generic text)
 {
