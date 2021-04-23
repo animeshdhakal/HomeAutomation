@@ -40,7 +40,7 @@ class Manager{
         void handleRoot();
         void handleExit();
         void handleWiFi();
-        void handleCheckUpdate();
+        void handleNotFound();
         void handleUpdateRoot();
         void handleInfo();
         void handleSave();

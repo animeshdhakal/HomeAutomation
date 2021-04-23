@@ -76,7 +76,8 @@ void Manager::startServer()
   server->on("/exit", std::bind(&Manager::handleExit, this));
   server->on("/info", std::bind(&Manager::handleInfo, this));
   server->on("/u", std::bind(&Manager::handleUpdateRoot, this));  
-  server->onNotFound(std::bind(&Manager::handleRoot, this));
+  server->onNotFound(std::bind(&Manager::handleNotFound, this));
+
   server->begin();
   while (w == 0)
   {
@@ -155,6 +156,19 @@ void Manager::handleWiFi()
   page += FPSTR(END);
 
   server->send(200, "text/html", page);
+}
+
+void Manager::handleNotFound() {
+  if (captivePortal()) { // If caprive portal redirect instead of displaying the error page.
+    return;
+  }
+  String message = F("File Not Found\n\n");
+  message += F("URI: ");
+  message += server->uri();
+  server->sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  server->sendHeader("Pragma", "no-cache");
+  server->sendHeader("Expires", "-1");
+  server->send(404, "text/plain", message);
 }
 
 void Manager::handleUpdateRoot()
