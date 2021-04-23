@@ -48,8 +48,6 @@ class Manager{
         String toStringIp(IPAddress ip);
         boolean isIp(String str);
         int w = 0;
-        template <typename Generic>
-        void   Debug(Generic text);
 };
 
 extern Manager manager;

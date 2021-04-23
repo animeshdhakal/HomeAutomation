@@ -36,21 +36,17 @@ void Manager::connect(const char *ssid, const char *pass)
   }
   if (WiFi.status() == WL_CONNECTED)
   {
-    Debug("Connected");
-
     delay(100);
     w = 1;
   }
   else
   {
-    Debug("Connection time out starting the AP");
     openPortal(APNAME, APPASS);
   }
 }
 
 void Manager::openPortal(const char *_APNAME, const char *_APPASS)
 {
-  Debug("Starting Config Portal");
   APNAME = (char*)_APNAME;
   APPASS = (char*)_APPASS;
   if (WiFi.status() != WL_CONNECTED)
@@ -71,8 +67,6 @@ void Manager::openPortal(const char *_APNAME, const char *_APPASS)
 void Manager::startServer()
 {
   delay(500);
-  Debug(F("AP IP : "));
-  Debug(WiFi.softAPIP());
   server.reset(new ESP8266WebServer(80));
   dnsServer.reset(new DNSServer);
   dnsServer->start(DNS_PORT, "*", WiFi.softAPIP());
@@ -179,13 +173,10 @@ void Manager::handleUpdateRoot()
       String payload = http.getString();
       if (status != 200)
       {
-        Debug("Server Not Responding Properly");
-        Debug(payload);
         server->send(200, "text/plain", "Server Not Responding Properly");
         return;
       }
-      Debug(Version);
-      Debug(payload);
+      
       http.end();
       if (ESP.getSketchMD5() != payload)
       {
@@ -222,27 +213,22 @@ void Manager::handleUpdateRoot()
      
     if (!Update.begin(size))
     {
-      Debug("Update begin Failed");
       server->send(200, "text/plain", "Error " + (String)Update.getError());
       Update.end();
       return;
     }
     if (Update.writeStream(*tcp) != size)
     {
-      Debug("Update writing Failed");
       server->send(200, "text/html", "Error" + (String)Update.getError());
-      Update.end();
       return;
     }
     
     if (!Update.end(true))
     {
-      Debug("Update Failed");
       server->send(200, "text/plain", "Error " + (String)Update.getError());
-      Update.end();
       return;
     }
-    Debug("Update Successs");
+
     http.end();
     server->send(200, "text/html", "Update Success. Rebooting Esp");
     delay(1000);
@@ -301,7 +287,6 @@ boolean Manager::captivePortal()
 {
   if (!isIp(server->hostHeader()))
   {
-    Debug("Request redirected to captive portal");
     server->sendHeader("Location", String("http://") + toStringIp(server->client().localIP()), true);
     server->send(302, "text/plain", "");
     server->client().stop();
@@ -334,11 +319,4 @@ String Manager::toStringIp(IPAddress ip)
   return res;
 }
 
-template <typename Generic>
-void Manager::Debug(Generic text)
-{
-
-  Serial.print("**M: ");
-  Serial.println(text);
-}
 Manager manager;
