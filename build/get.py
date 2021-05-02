@@ -25,7 +25,7 @@ def cmd_install(ver, download):
             cd ./build/esp8266/ \n
             git submodule update --init -f \n
             cd tools \n 
-            python{sys.version_info[0]} get.py \n
+            python3 get.py \n
         """
         os.system(commands)
     else:
@@ -34,7 +34,7 @@ def cmd_install(ver, download):
             git checkout tags/{ver} -f \n
             git submodule update --init -f \n
             cd tools \n 
-            python{sys.version_info[0]} get.py \n
+            python3 get.py \n
         """
         os.system(commands)
 

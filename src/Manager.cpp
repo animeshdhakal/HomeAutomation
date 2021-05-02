@@ -20,23 +20,20 @@ int Manager::getRSSIasQuality(int RSSI)
   return quality;
 }
 
-void Manager::connect(const char *ssid, const char *pass)
+void Manager::connect(String& ssid, String& pass)
 {
 
   WiFi.disconnect();
   WiFi.mode(WIFI_STA);
-  delay(100);
   WiFi.begin(ssid, pass);
   for (int i = 0; i < 100; i++)
   {
-    Serial.print("*");
     if (WiFi.status() == WL_CONNECTED)
       break;
-    delay(100);
+    yield();
   }
   if (WiFi.status() == WL_CONNECTED)
   {
-    delay(100);
     w = 1;
   }
   else
@@ -45,10 +42,10 @@ void Manager::connect(const char *ssid, const char *pass)
   }
 }
 
-void Manager::openPortal(const char *_APNAME, const char *_APPASS)
+void Manager::openPortal(char *_APNAME, char *_APPASS)
 {
-  APNAME = (char*)_APNAME;
-  APPASS = (char*)_APPASS;
+  APNAME = _APNAME;
+  APPASS = _APPASS;
   if (WiFi.status() != WL_CONNECTED)
   {
     wifi_station_disconnect();
@@ -66,7 +63,6 @@ void Manager::openPortal(const char *_APNAME, const char *_APPASS)
 
 void Manager::startServer()
 {
-  delay(500);
   server.reset(new ESP8266WebServer(80));
   dnsServer.reset(new DNSServer);
   dnsServer->start(DNS_PORT, "*", WiFi.softAPIP());
@@ -107,7 +103,7 @@ void Manager::handleRoot()
 void Manager::handleExit()
 {
   server->send(200, "text/html", "<center style='margin-top: 20vh;'><h1>Bye Bye. See You Soon</h1></center>");
-  delay(1000);
+  delay(100);
   w = 1;
   WiFi.mode(WIFI_STA);
   WiFi.begin();
@@ -159,7 +155,7 @@ void Manager::handleWiFi()
 }
 
 void Manager::handleNotFound() {
-  if (captivePortal()) { // If caprive portal redirect instead of displaying the error page.
+  if (captivePortal()) {
     return;
   }
   String message = F("File Not Found\n\n");
@@ -199,8 +195,6 @@ void Manager::handleUpdateRoot()
         page += FPSTR(STYLE);
         page += FPSTR(HEAD_END);
         page += FPSTR(UPDATE_FOUND);
-        page.replace("{CV}", ESP.getSketchMD5());
-        page.replace("{UV}", payload);
         page += FPSTR(SCRIPT);
         page += FPSTR(END);
         server->send(200, "text/html", page);
@@ -266,8 +260,8 @@ void Manager::handleSave()
   String ssid = server->arg("ssid");
   String pass = server->arg("pass");
   server->send(200, "text/plain", "<style>p{color: red;}</style><center><h2 style='margin-top: 20vh'>Credentials Received By ESP</h2></center>");
-  delay(1000);
-  connect(ssid.c_str(), pass.c_str());
+  delay(100);
+  connect(ssid, pass);
 }
 
 void Manager::handleInfo()
@@ -283,14 +277,10 @@ void Manager::handleInfo()
   page += "<h3>Flash Chip Size: " + (String)ESP.getFlashChipRealSize() + "</h3>";
   page += "<h3>CPU Frequency: " + (String)ESP.getCpuFreqMHz() + " MHz</h3>";
   page += "<h3>Boot Version: " + (String)system_get_boot_version() + "</h3>";
-  page += "<h3>Core Version: " + ESP.getCoreVersion() + "</h3>";
   page += "<h3>Last Reset Reason: " + (String)ESP.getResetInfo() + "</h3>";
-  page += "<h3>Vcc: " + (String)ESP.getVcc() + "</h3>";
-  page += "<h3>Md5 Hash of Sketch: " + (String)ESP.getSketchMD5() + "</h3>";
   page += "<h3>Flash Chip Speed: " + (String)ESP.getFlashChipSpeed() + "</h3>";
-  String con = WiFi.status() == WL_CONNECTED ? "Connected" : "Not Connected";
   page += "<h3>Currently Stored SSID: " + (String)WiFi.SSID() + "</h3>";
-  page += "<h3>Connection Status: " + con + "</h3>";
+  page += "<h3>Connection Status: " + String(WiFi.status() == WL_CONNECTED ? "Connected" : "Not Connected") + "</h3>";
   page += "<h3>WiFi IP: " + toStringIp(WiFi.localIP()) + "</h3>";
   page += "<h3>AP IP: " + toStringIp(WiFi.softAPIP()) + "</h3>";
 

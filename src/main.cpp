@@ -37,24 +37,18 @@ int toInt(char a){
 }
 
 void writeBlynk(){
-  File file = LittleFS.open("./config.json", "r");
-  char data[file.size()];
-  file.readBytes(data, file.size());
-  file.close();
-  Blynk.virtualWrite(V1, toInt(data[0]));
-  Blynk.virtualWrite(V2, toInt(data[1]));
-  Blynk.virtualWrite(V3, toInt(data[2]));
-  Blynk.virtualWrite(V4, toInt(data[3]));
+  Blynk.virtualWrite(V1, st1);
+  Blynk.virtualWrite(V2, st2);
+  Blynk.virtualWrite(V3, st3);
+  Blynk.virtualWrite(V4, st4);
 }
 
 void writeFS(){
   File file = LittleFS.open("./config.json", "w");
-  String data;
-  data += st1;
-  data += st2;
-  data += st3;
-  data += st4;
-  file.write(data.c_str());
+  file.print(st1);
+  file.print(st2);
+  file.print(st3);
+  file.print(st4);
   file.close();
 }
 

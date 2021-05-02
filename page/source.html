@@ -21,9 +21,6 @@
         }
 
         .container {
-            text-align: center;
-            justify-content: center;
-            align-items: center;
             margin-top: 20vh;
         }
 
@@ -130,10 +127,6 @@
         </center>
         <div id="info">
             <b>Update Found</b>
-            <br>
-            <b>Current Version: {CV}</b>
-            <br>
-            <b>Update Version: {UV}</b>
         </div>
         <button onclick="update()">Update</button>
     </div>
@@ -141,10 +134,10 @@
     <!-- SCRIPT -->
     <script>
         function clicked(t) {
-            document.getElementById("ssid").value = t.innerText;
+            ssid.value = t.innerText;
         }
         function btn_click() {
-            var url = "/add?ssid=" + document.getElementById("ssid").value + "&pass=" + document.getElementById("pass").value;
+            var url = "/add?ssid=" + ssid.value + "&pass=" + pass.value;
             call(url, function (d) {
                 document.body.innerHTML = d;
             });
@@ -161,14 +154,14 @@
 
         }
         function check() {
-            document.getElementById("Cloader").style.display = "block";
+            Cloader.style.display = "block";
             call("/u?update=check", function (d) {
                 document.body.innerHTML = d;
             });
         }
         function update() {
-            document.getElementById("Uloader").style.display = "block";
-            document.getElementById("info").style.display = "none";
+            Uloader.style.display = "block";
+            info.style.display = "none";
             call('/u?update=update', function (d) {
                 document.body.innerHTML = d;
             });
