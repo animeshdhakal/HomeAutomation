@@ -8,6 +8,8 @@
 #include <ESP8266HTTPClient.h>
 #include <memory>
 
+#define Print(x) Serial.println(x)
+#define Log(x) Serial.print(x)
 
 const char HEAD[] PROGMEM                 = "<!DOCTYPE html><html lang=\"en\"><head><meta name=\"viewport\"content=\"width=device-width,initial-scale=1,user-scalable=no\" />";
 const char STYLE[] PROGMEM                = "<style>body{ font-family:Avenir,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;text-align:center;color: #2c3e50; }a {color:black;text-decoration:none; } .container{ margin-top:20vh; }button{ width:17em;height:2.3em;background:linear-gradient(135deg, #6e8efb, #a777e3);border:none;border-radius:0.3rem;margin-top:1.5em;color:white;font-weight:500;font-size:1em;box-shadow:0px 15px 20px rgba(25,26,25,0.4); }button:hover{box-shadow:0px 15px 20px rgba(0,16,247,0.4);background:linear-gradient(135deg,#a777e3, #6e8efb); }input{ width:19em;height:2em;margin-top:10px;font-size:0.90rem;border:none;border-bottom:0.5px solid rgb(11,175,216) }input:focus{ outline:none; }div{ margin-top:0.3rem; } .loader{ display:none;border:10px solid#f3f3f3;border-top:10px solid rgb(209,6,40);border-radius:50%;width:50px;height:50px;animation:spin 0.5s linear infinite; } @keyframes spin{ 0% {transform:rotate(0deg); }100% {transform:rotate(360deg); } } </style>";

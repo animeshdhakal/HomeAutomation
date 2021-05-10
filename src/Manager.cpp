@@ -22,7 +22,7 @@ int Manager::getRSSIasQuality(int RSSI)
 
 void Manager::connect(String& ssid, String& pass)
 {
-
+  Print("Connecting with " + ssid);
   WiFi.disconnect();
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, pass);
@@ -30,20 +30,25 @@ void Manager::connect(String& ssid, String& pass)
   {
     if (WiFi.status() == WL_CONNECTED)
       break;
-    yield();
+    Log(".");
+    delay(100);
   }
   if (WiFi.status() == WL_CONNECTED)
   {
+    Print("Connected ! Stopping Portal");
     w = 1;
   }
   else
   {
+    Print("Connection Unsuccessfull ! Restarting Portal");
     openPortal(APNAME, APPASS);
   }
 }
 
 void Manager::openPortal(char *_APNAME, char *_APPASS)
 {
+  Print("Starting Config Portal");
+
   APNAME = _APNAME;
   APPASS = _APPASS;
   if (WiFi.status() != WL_CONNECTED)
@@ -216,13 +221,12 @@ void Manager::handleUpdateRoot()
     http.setUserAgent(F("Animesh"));
     http.addHeader(F("TYPE"), F("ESP"));
     int httpcode = http.GET();
-    int size = http.getSize();
+    uint32_t size = http.getSize();
     WiFiClient *tcp = http.getStreamPtr();
-     
     if (!Update.begin(size))
     {
       server->send(200, "text/plain", "Error " + (String)Update.getError());
-      Update.end();
+      Print("Error1: " + (String)Update.getError());
       return;
     }
     if (Update.writeStream(*tcp) != size)
@@ -234,6 +238,7 @@ void Manager::handleUpdateRoot()
     if (!Update.end(true))
     {
       server->send(200, "text/plain", "Error " + (String)Update.getError());
+      Print("Error3: " + (String)Update.getError());
       return;
     }
 
@@ -291,6 +296,7 @@ boolean Manager::captivePortal()
 {
   if (!isIp(server->hostHeader()))
   {
+    Print("Request redirected to captive portal");
     server->sendHeader("Location", String("http://") + toStringIp(server->client().localIP()), true);
     server->send(302, "text/plain", "");
     server->client().stop();

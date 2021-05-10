@@ -3,7 +3,6 @@
 #define BLYNK_PRINT Serial
 #include <LittleFS.h>
 #include <BlynkSimpleEsp8266.h>
-#include <ArduinoOTA.h>
 #include "Manager.h"
 
 #define R1 D5
@@ -53,13 +52,13 @@ void writeFS(){
 }
 
 BLYNK_CONNECTED(){
-  Serial.println("Connected to the server");
+  Print("Connected to the server");
   writeBlynk();
   mode = 1; 
 }
 
 BLYNK_DISCONNECTED(){
-  Serial.println("Disconnected");
+  Print("Disconnected");
   mode = 0;
 }
 
@@ -268,6 +267,7 @@ void checkBtn(){
 }
 void setup(){
   Serial.begin(115200);
+  Print("Intializing System");
   LittleFS.begin();
   pinMode(R1, OUTPUT);
   pinMode(R2, OUTPUT);
@@ -287,22 +287,11 @@ void setup(){
   digitalWrite(R3, st3);
   digitalWrite(R4, st4);
 
-  WiFi.begin("unique nepal", "brother$");
-  WiFi.mode(WIFI_STA);
-  while(WiFi.status() != WL_CONNECTED)
-  {
-    Serial.print("*");
-    checkBtn();
-    withoutInternet();
-    delay(100);
-  }
-  ArduinoOTA.begin();
-  manager.openPortal("animeshdhakalll", "animeshdhakal");
-  Blynk.config(auth);
+  WiFi.begin();
+  Blynk.config(auth, "188.166.206.43");
 }
 
 void loop(){
-  ArduinoOTA.handle();
   Blynk.run();
   if(mode==1){withInternet();}else{withoutInternet();}
   checkBtn();
