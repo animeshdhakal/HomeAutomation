@@ -1,7 +1,6 @@
 /******Code Written By Mr. Animesh Dhakal******/
 #include "Manager.h"
 
-
 int Manager::getRSSIasQuality(int RSSI)
 {
   int quality = 0;
@@ -20,7 +19,7 @@ int Manager::getRSSIasQuality(int RSSI)
   return quality;
 }
 
-void Manager::connect(String& ssid, String& pass)
+void Manager::connect(String &ssid, String &pass)
 {
   Print("Connecting with " + ssid);
   WiFi.disconnect();
@@ -76,7 +75,7 @@ void Manager::startServer()
   server->on("/add", std::bind(&Manager::handleSave, this));
   server->on("/exit", std::bind(&Manager::handleExit, this));
   server->on("/info", std::bind(&Manager::handleInfo, this));
-  server->on("/u", std::bind(&Manager::handleUpdateRoot, this));  
+  server->on("/u", std::bind(&Manager::handleUpdateRoot, this));
   server->onNotFound(std::bind(&Manager::handleNotFound, this));
 
   server->begin();
@@ -95,7 +94,8 @@ void Manager::startServer()
 
 void Manager::handleRoot()
 {
-  if (captivePortal()) return;
+  if (captivePortal())
+    return;
   String page = FPSTR(HEAD);
   page.replace("{t}", "Manager Portal");
   page += FPSTR(STYLE);
@@ -115,7 +115,8 @@ void Manager::handleExit()
 }
 void Manager::handleWiFi()
 {
-  if (captivePortal()) return;
+  if (captivePortal())
+    return;
   String page = FPSTR(HEAD);
   page.replace("{t}", "Manager");
   page += FPSTR(STYLE);
@@ -159,8 +160,10 @@ void Manager::handleWiFi()
   server->send(200, "text/html", page);
 }
 
-void Manager::handleNotFound() {
-  if (captivePortal()) {
+void Manager::handleNotFound()
+{
+  if (captivePortal())
+  {
     return;
   }
   String message = F("File Not Found\n\n");
@@ -174,7 +177,8 @@ void Manager::handleNotFound() {
 
 void Manager::handleUpdateRoot()
 {
-  if (captivePortal()) return;
+  if (captivePortal())
+    return;
   if (server->arg("update") == "check")
   {
     if (WiFi.status() == WL_CONNECTED)
@@ -191,7 +195,7 @@ void Manager::handleUpdateRoot()
         server->send(200, "text/plain", "Server Not Responding Properly");
         return;
       }
-      
+
       http.end();
       if (ESP.getSketchMD5() != payload)
       {
@@ -223,18 +227,47 @@ void Manager::handleUpdateRoot()
     int httpcode = http.GET();
     uint32_t size = http.getSize();
     WiFiClient *tcp = http.getStreamPtr();
+
+    Print("Update Starting");
+
     if (!Update.begin(size))
     {
       server->send(200, "text/plain", "Error " + (String)Update.getError());
       Print("Error1: " + (String)Update.getError());
       return;
     }
-    if (Update.writeStream(*tcp) != size)
+    int written = 0;
+    int prevProgress = 0;
+    uint32_t timeout;
+    uint8_t buff[256];
+    while (tcp->connected() && written < size)
     {
-      server->send(200, "text/html", "Error" + (String)Update.getError());
-      return;
+      delay(10);
+      timeout = millis();
+      while (tcp->connected() && !tcp->available())
+      {
+        delay(1);
+        if (millis() - timeout > 10000L)
+        {
+          Print("Timeout");
+        }
+      }
+
+      int len = tcp->read(buff, sizeof(buff));
+      if (len <= 0)
+        continue;
+
+      Update.write(buff, len);
+      written += len;
+
+      const int progress = (written * 100) / size;
+      if (progress - prevProgress >= 10 || progress == 100)
+      {
+        Print(String("\r ") + progress + "%");
+        prevProgress = progress;
+      }
     }
-    
+
     if (!Update.end(true))
     {
       server->send(200, "text/plain", "Error " + (String)Update.getError());
@@ -242,10 +275,21 @@ void Manager::handleUpdateRoot()
       return;
     }
 
+    if (!Update.isFinished())
+    {
+      server->send(200, "text/plain", F("Update not finished"));
+      return;
+    }
+
     http.end();
     server->send(200, "text/html", "Update Success. Rebooting Esp");
     delay(1000);
+    ESP.restart();
+    delay(1000);
     ESP.reset();
+    while (1)
+    {
+    };
   }
   else
   {

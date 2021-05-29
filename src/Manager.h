@@ -28,7 +28,7 @@ class Manager{
     public:
         void openPortal(char *_APNAME, char *_APPASS);
     private:
-        String OTA_HOST = "update-server-ad.herokuapp.com";
+        String OTA_HOST = "update-server-da.herokuapp.com";
         int OTA_PORT = 80;
         const byte DNS_PORT = 53;
         char *APNAME;
