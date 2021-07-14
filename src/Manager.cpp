@@ -185,7 +185,7 @@ void Manager::handleUpdateRoot()
     {
 
       HTTPClient http;
-      http.begin(OTA_HOST, OTA_PORT, "/");
+      http.begin(*client, OTA_HOST, OTA_PORT, "/");
       http.setUserAgent(F("Animesh"));
       http.addHeader(F("TYPE"), F("ESP"));
       int status = http.GET();
@@ -221,7 +221,8 @@ void Manager::handleUpdateRoot()
   else if (server->arg("update") == "update")
   {
     HTTPClient http;
-    http.begin(OTA_HOST, OTA_PORT, "/u");
+    WiFiClient a;
+    http.begin(*client, OTA_HOST, OTA_PORT, "/u");
     http.setUserAgent(F("Animesh"));
     http.addHeader(F("TYPE"), F("ESP"));
     int httpcode = http.GET();
