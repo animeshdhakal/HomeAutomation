@@ -18,8 +18,6 @@
             "ESP8266"
          ],
          "includePath": [
-            "/home/animeshdhakal/Desktop/test/include",
-            "/home/animeshdhakal/Desktop/test/src",
             "${workspaceFolder}/build/esp8266/tools/sdk/include",
             "${workspaceFolder}/build/esp8266/tools/sdk/libc/xtensa-lx106-elf/include",
             "${workspaceFolder}/build/esp8266/cores/esp8266",
@@ -54,8 +52,6 @@
             "${workspaceFolder}/build/esp8266/libraries/Ticker/src",
             "${workspaceFolder}/build/esp8266/libraries/Wire",
             "${workspaceFolder}/build/esp8266/libraries/esp8266/src",
-            "/home/animeshdhakal/Desktop/HomeAutomation/lib/Blynk/src",
-            "/home/animeshdhakal/Desktop/HomeAutomation/lib/WiFiManager",
             ""
          ],
          "compilerPath": "./build/esp8266//tools/xtensa-lx106-elf/bin/xtensa-lx106-elf-g++",
