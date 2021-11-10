@@ -1,6 +1,3 @@
-[submodule "build/makeEspArduino"]
-	path = build/makeEspArduino
-	url = https://github.com/plerup/makeEspArduino.git
-[submodule "build/esp8266"]
-	path = build/esp8266
-	url = https://github.com/esp8266/Arduino
+[submodule "lib/Blynk"]
+	path = lib/Blynk
+	url = https://github.com/blynkkk/blynk-library

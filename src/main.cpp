@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
-#define BLYNK_PRINT Serial
 #include <LittleFS.h>
 #include <BlynkSimpleEsp8266.h>
 #include "Manager.h"
@@ -17,32 +16,35 @@
 
 #define trigger_pin D1
 
-int mode=0;
+int mode = 0;
 
-int flag1=0;
-int flag2=0;
-int flag3=0;
-int flag4=0;
+int flag1 = 0;
+int flag2 = 0;
+int flag3 = 0;
+int flag4 = 0;
 
-int st1=0;
-int st2=0;
-int st3=0;
-int st4=0;
+int st1 = 0;
+int st2 = 0;
+int st3 = 0;
+int st4 = 0;
 
-char auth[]="nlJHegSIKdIJWqf66_0KqnvuFVIz_8qM";
+char auth[] = "nlJHegSIKdIJWqf66_0KqnvuFVIz_8qM";
 
-int toInt(char a){
+int toInt(char a)
+{
   return a - '0';
 }
 
-void writeBlynk(){
+void writeBlynk()
+{
   Blynk.virtualWrite(V1, st1);
   Blynk.virtualWrite(V2, st2);
   Blynk.virtualWrite(V3, st3);
   Blynk.virtualWrite(V4, st4);
 }
 
-void writeFS(){
+void writeFS()
+{
   File file = LittleFS.open("./config.json", "w");
   file.print(st1);
   file.print(st2);
@@ -51,48 +53,56 @@ void writeFS(){
   file.close();
 }
 
-BLYNK_CONNECTED(){
+BLYNK_CONNECTED()
+{
   Print("Connected to the server");
   writeBlynk();
-  mode = 1; 
+  mode = 1;
 }
 
-BLYNK_DISCONNECTED(){
+BLYNK_DISCONNECTED()
+{
   Print("Disconnected");
   mode = 0;
 }
 
-BLYNK_WRITE(V1){
-  st1=param.asInt();
+BLYNK_WRITE(V1)
+{
+  st1 = param.asInt();
   digitalWrite(R1, st1);
   writeFS();
 }
 
-BLYNK_WRITE(V2){
-  st2=param.asInt();
+BLYNK_WRITE(V2)
+{
+  st2 = param.asInt();
   digitalWrite(R2, st2);
   writeFS();
 }
 
-BLYNK_WRITE(V3){
-  st3=param.asInt();
+BLYNK_WRITE(V3)
+{
+  st3 = param.asInt();
   digitalWrite(R3, st3);
   writeFS();
 }
 
-BLYNK_WRITE(V4){
-  st4=param.asInt();
+BLYNK_WRITE(V4)
+{
+  st4 = param.asInt();
   digitalWrite(R4, st4);
   writeFS();
 }
 
-void readFS(){
+void readFS()
+{
 
   File file = LittleFS.open("./config.json", "r");
-  if(!file){
+  if (!file)
+  {
     file.close();
     File file = LittleFS.open("./config.json", "w");
-    file.write("1111");  
+    file.write("1111");
   }
   char data[file.size()];
   file.readBytes(data, file.size());
@@ -101,11 +111,11 @@ void readFS(){
   st2 = toInt(data[1]);
   st3 = toInt(data[2]);
   st4 = toInt(data[3]);
-  
 }
 
-void withInternet(){
-  
+void withInternet()
+{
+
   if (digitalRead(S1) == LOW)
   {
     if (flag1 == 0)
@@ -187,85 +197,104 @@ void withInternet(){
     }
   }
 }
-void withoutInternet(){
-  
+void withoutInternet()
+{
+
   //Relay1
-  if(digitalRead(S1)==LOW){
-    if(flag1==0){
+  if (digitalRead(S1) == LOW)
+  {
+    if (flag1 == 0)
+    {
       digitalWrite(R1, LOW);
-      st1=0;
-      flag1=1;
+      st1 = 0;
+      flag1 = 1;
       writeFS();
     }
   }
-  if(digitalRead(S1)==HIGH){
-    if(flag1==1){
+  if (digitalRead(S1) == HIGH)
+  {
+    if (flag1 == 1)
+    {
       digitalWrite(R1, HIGH);
-      st1=1;
-      flag1=0;
+      st1 = 1;
+      flag1 = 0;
       writeFS();
     }
   }
   //Relay2
-  if(digitalRead(S2)==LOW){
-    if(flag2==0){
+  if (digitalRead(S2) == LOW)
+  {
+    if (flag2 == 0)
+    {
       digitalWrite(R2, LOW);
-      st2=0;
-      flag2=1;
+      st2 = 0;
+      flag2 = 1;
       writeFS();
     }
   }
-  if(digitalRead(S2)==HIGH){
-    if(flag2==1){
+  if (digitalRead(S2) == HIGH)
+  {
+    if (flag2 == 1)
+    {
       digitalWrite(R2, HIGH);
-      st2=1;
-      flag2=0;
+      st2 = 1;
+      flag2 = 0;
       writeFS();
     }
   }
   //Relay3
-  if(digitalRead(S3)==LOW){
-    if(flag3==0){
+  if (digitalRead(S3) == LOW)
+  {
+    if (flag3 == 0)
+    {
       digitalWrite(R3, LOW);
-      st3=0;
-      flag3=1;
+      st3 = 0;
+      flag3 = 1;
       writeFS();
     }
   }
-  if(digitalRead(S3)==HIGH){
-    if(flag3==1){
+  if (digitalRead(S3) == HIGH)
+  {
+    if (flag3 == 1)
+    {
       digitalWrite(R3, HIGH);
-      st3=1;
-      flag3=0;
+      st3 = 1;
+      flag3 = 0;
       writeFS();
     }
   }
   //Relay4
-  if(digitalRead(S4)==LOW){
-    if(flag4==0){
+  if (digitalRead(S4) == LOW)
+  {
+    if (flag4 == 0)
+    {
       digitalWrite(R4, LOW);
-      st4=0;
-      flag4=1;
+      st4 = 0;
+      flag4 = 1;
       writeFS();
     }
   }
-  if(digitalRead(S4)==HIGH){
-    if(flag4==1){
+  if (digitalRead(S4) == HIGH)
+  {
+    if (flag4 == 1)
+    {
       digitalWrite(R4, HIGH);
-      st4=1;
-      flag4=0;
+      st4 = 1;
+      flag4 = 0;
       writeFS();
     }
   }
-
 }
 
-void checkBtn(){
-  if(digitalRead(trigger_pin)==LOW){
+void checkBtn()
+{
+  if (digitalRead(trigger_pin) == LOW)
+  {
     manager.openPortal("animeshdhakall", "animeshdhakal");
   }
 }
-void setup(){
+void setup()
+{
   Serial.begin(115200);
   Print("Intializing System");
   LittleFS.begin();
@@ -281,7 +310,7 @@ void setup(){
   pinMode(trigger_pin, INPUT_PULLUP);
 
   readFS();
- 
+
   digitalWrite(R1, st1);
   digitalWrite(R2, st2);
   digitalWrite(R3, st3);
@@ -291,8 +320,16 @@ void setup(){
   Blynk.config(auth, "188.166.206.43");
 }
 
-void loop(){
+void loop()
+{
   Blynk.run();
-  if(mode==1){withInternet();}else{withoutInternet();}
+  if (mode == 1)
+  {
+    withInternet();
+  }
+  else
+  {
+    withoutInternet();
+  }
   checkBtn();
 }
